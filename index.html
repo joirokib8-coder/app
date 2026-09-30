@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -306,7 +307,7 @@
         <h1 id="countdownNumber" style="font-size: 50px; margin: 0; color: #ffeb3b;">15</h1>
     </div>
 
-    <!-- ফুলস্ক্রিন ইন-অ্যাপ ভিডিও প্লেয়ার (ডাউনলোড ও ফুলস্ক্রিন সহ) -->
+    <!-- ফুলস্ক্রিন ইন-অ্যাপ ভিডিও প্লেয়ার -->
     <div id="videoPlayerModal">
         <div class="player-container">
             <div id="playerWrapper"></div>
@@ -344,8 +345,11 @@
             <label>থাম্বনেইল ছবি আপলোড করুন:</label>
             <input type="file" id="newImgFile" accept="image/*" style="background:#222; padding:8px; border-radius:5px; margin-bottom:10px; color:#fff; width:100%; box-sizing:border-box;">
 
-            <label>ভিডিও ফাইল সিলেক্ট করুন (.mp4):</label>
-            <input type="file" id="newVideoFile" accept="video/mp4,video/mkv,video/*" style="background:#222; padding:8px; border-radius:5px; margin-bottom:10px; color:#fff; width:100%; box-sizing:border-box;">
+            <label>ভিডিও লিংক (সরাসরি ভিডিওর URL বা ফাইল):</label>
+            <input type="text" id="newVideoUrlInput" placeholder="এখানে ভিডিওর ডাইরেক্ট লিংক দিন (যেমন: .mp4 লিংক)">
+
+            <label>অথবা ফাইল সিলেক্ট করুন:</label>
+            <input type="file" id="newVideoFile" accept="video/*" style="background:#222; padding:8px; border-radius:5px; margin-bottom:10px; color:#fff; width:100%; box-sizing:border-box;">
 
             <label>বিজ্ঞাপনের লিংক (Ad Link):</label>
             <input type="text" id="newAdLink" placeholder="বিজ্ঞাপনের লিংক এখানে দিন">
@@ -402,7 +406,7 @@
             const playerModal = document.getElementById('videoPlayerModal');
             const wrapper = document.getElementById('playerWrapper');
 
-            // এখানে ডাউনলোড বাটন (controlsList without nodownload) এবং ফুলস্ক্রিন ফিচার যুক্ত করা হয়েছে
+            // এখানে ডাউনলোড বাটন এবং ফুলস্ক্রিন ফিচার সঠিকভাবে এনাবল করা আছে
             wrapper.innerHTML = `
                 <video controls autoplay playsinline style="width:100%; max-height:75vh; display:block;">
                     <source src="${url}" type="video/mp4">
@@ -447,24 +451,35 @@
             let title = document.getElementById('newTitle').value;
             let sub = document.getElementById('newSub').value;
             let adLink = document.getElementById('newAdLink').value;
+            let videoUrlInput = document.getElementById('newVideoUrlInput').value.trim();
             let imgFileInput = document.getElementById('newImgFile');
             let videoFileInput = document.getElementById('newVideoFile');
 
-            if(title && videoFileInput.files && videoFileInput.files[0]) {
-                let videoFile = videoFileInput.files[0];
-                let videoObjectUrl = URL.createObjectURL(videoFile);
-
-                if (imgFileInput.files && imgFileInput.files[0]) {
-                    let imgReader = new FileReader();
-                    imgReader.onload = function(imgEvent) {
-                        saveVideoData(category, title, sub, imgEvent.target.result, videoObjectUrl, adLink);
-                    }
-                    imgReader.readAsDataURL(imgFileInput.files[0]);
+            if(title && (videoUrlInput || (videoFileInput.files && videoFileInput.files[0]))) {
+                if(videoUrlInput) {
+                    processImageAndSave(category, title, sub, videoUrlInput, adLink, imgFileInput);
                 } else {
-                    saveVideoData(category, title, sub, 'https://via.placeholder.com/300x150', videoObjectUrl, adLink);
+                    let videoFile = videoFileInput.files[0];
+                    let reader = new FileReader();
+                    reader.onload = function(e) {
+                        processImageAndSave(category, title, sub, e.target.result, adLink, imgFileInput);
+                    };
+                    reader.readAsDataURL(videoFile);
                 }
             } else {
-                alert('দয়া করে নাটকের নাম এবং একটি ভিডিও ফাইল সিলেক্ট করুন!');
+                alert('দয়া করে নাটকের নাম এবং ভিডিওর লিংক অথবা ফাইল দিন!');
+            }
+        }
+
+        function processImageAndSave(category, title, sub, videoUrl, adLink, imgFileInput) {
+            if (imgFileInput.files && imgFileInput.files[0]) {
+                let imgReader = new FileReader();
+                imgReader.onload = function(imgEvent) {
+                    saveVideoData(category, title, sub, imgEvent.target.result, videoUrl, adLink);
+                }
+                imgReader.readAsDataURL(imgFileInput.files[0]);
+            } else {
+                saveVideoData(category, title, sub, 'https://via.placeholder.com/300x150', videoUrl, adLink);
             }
         }
 
@@ -477,15 +492,16 @@
                 localStorage.setItem('movieHubVideos', JSON.stringify(videos));
                 loadVideos();
                 closeUploadPanel();
-                alert('সফলভাবে ভিডিও আপলোড ও পাবলিশ করা হয়েছে!');
+                alert('সফলভাবে ভিডিও পাবলিশ করা হয়েছে!');
 
                 document.getElementById('newTitle').value = '';
                 document.getElementById('newSub').value = '';
                 document.getElementById('newAdLink').value = '';
+                document.getElementById('newVideoUrlInput').value = '';
                 document.getElementById('newImgFile').value = '';
                 document.getElementById('newVideoFile').value = '';
             } catch (e) {
-                alert('স্টোরেজ ফুল হয়ে গেছে! দয়া করে অন্য ভিডিও ব্যবহার করুন।');
+                alert('স্টোরেজ ফুল হয়ে গেছে! ছোট সাইজের ভিডিও লিংক ব্যবহার করুন।');
             }
         }
 
@@ -595,5 +611,4 @@
     </script>
 </body>
 </html>
-
 
