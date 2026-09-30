@@ -3,114 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>বিনোদন জোন - বাংলা কন্টেন্ট</title>
+    <title>Movie Hub BD</title>
     <style>
-        body { font-family: 'Arial', sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
-        header { background-color: #333; color: white; padding: 1rem; text-align: center; }
-        .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
-
-        /* Slider Styling */
-        .slider-container { position: relative; width: 100%; max-width: 800px; margin: 20px auto; overflow: hidden; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
-        .slider { display: flex; transition: transform 0.5s ease-in-out; }
-        .slide { min-width: 100%; box-sizing: border-box; }
-        .slide img { width: 100%; height: 300px; object-fit: cover; display: block; }
-        .slider-nav { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; }
-        .nav-btn { width: 12px; height: 12px; background-color: rgba(255,255,255,0.5); border-radius: 50%; cursor: pointer; }
-        .nav-btn.active { background-color: white; }
-
-        /* Category Grid Styling */
-        .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 30px; }
-        .category-card { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; cursor: pointer; transition: transform 0.2s; }
-        .category-card:hover { transform: translateY(-5px); }
-        .category-card h2 { margin-top: 0; color: #333; }
-        .category-card p { color: #777; }
-
-        /* Auto-Impression Ad Zone (Hidden) */
-        #ad-zone { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
+        :root {
+            --bg-color: #0f1015;
+            --text-color: #ffffff;
+            --card-bg: #1a1c23;
+            --accent-color: #e91e63;
+            --secondary-text: #b0b0b0;
+        }
+        [data-theme="light"] {
+            --bg-color: #f4f5f7;
+            --text-color: #111111;
+            --card-bg: #ffffff;
+            --accent-color: #e91e63;
+            --secondary-text: #666666;
+        }
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background 0.3s, color 0.3s;
+            padding-bottom: 70px;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: var(--card-bg);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+        .header-controls {
+            display: flex;
+            gap: 10px;
+        }
+        button, select {
+            background: var(--accent-color);
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .container {
+            padding: 15px;
+        }
+        .banner {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            border-radius: 12px;
+            display: flex;
+            align-items: flex-end;
+            padding: 15px;
+            box-sizing: border-box;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-size: 16px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        .card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .card img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+        .card-body {
+            padding: 10px;
+        }
+        .card-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .card-sub {
+            font-size: 12px;
+            color: var(--secondary-text);
+        }
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--card-bg);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .nav-item {
+            text-align: center;
+            font-size: 11px;
+            color: var(--secondary-text);
+            cursor: pointer;
+        }
+        .nav-item.active {
+            color: var(--accent-color);
+        }
+        .ad-space {
+            background: #2a2d3d;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+            margin: 20px 0;
+            color: #888;
+            font-size: 12px;
+        }
     </style>
 </head>
-<body>
+<body data-theme="dark">
 
-<header>
-    <h1>বিনোদন জোন</h1>
-    <p>আপনার পছন্দের সব ছবি, নাটক ও গান এক জায়গায়!</p>
-</header>
-
-<div class="container">
-
-    <!-- Auto-Sliding Banner -->
-    <div class="slider-container">
-        <div class="slider" id="autoSlider">
-            <div class="slide"><img src="https://via.placeholder.com/800x300/FF5733/ffffff?text=নাটক+১+এর+থাম্বনেল" alt="নাটক ১"></div>
-            <div class="slide"><img src="https://via.placeholder.com/800x300/33FF57/ffffff?text=নাটক+২+এর+থাম্বনেল" alt="নাটক ২"></div>
-            <div class="slide"><img src="https://via.placeholder.com/800x300/3357FF/ffffff?text=নাটক+৩+এর+থাম্বনেল" alt="নাটক ৩"></div>
-            <div class="slide"><img src="https://via.placeholder.com/800x300/FF33A8/ffffff?text=নাটক+৪+এর+থাম্বনেল" alt="নাটক ৪"></div>
+    <header>
+        <div class="logo" id="appTitle">Movie Hub BD</div>
+        <div class="header-controls">
+            <select id="langSelect" onchange="changeLanguage()">
+                <option value="bn">বাংলা</option>
+                <option value="en">English</option>
+            </select>
+            <button onclick="toggleTheme()">🌓 থিম</button>
         </div>
-        <div class="slider-nav" id="sliderNav">
-            <div class="nav-btn active"></div>
-            <div class="nav-btn"></div>
-            <div class="nav-btn"></div>
-            <div class="nav-btn"></div>
+    </header>
+
+    <div class="container">
+        <!-- স্লাইডার ব্যানার -->
+        <div class="banner" id="bannerText">
+            ব্যাচেলর পয়েন্ট সিজন ৫ - নতুন এপিসোড
+        </div>
+
+        <!-- অ্যাড বসানোর জায়গা (এখানে আপনার এডসেন্স বা অন্য অ্যাড কোড বসাতে পারবেন) -->
+        <div class="ad-space">
+            [ এখানে আপনার বিজ্ঞাপন (Ads) কোড বসান ]
+        </div>
+
+        <div class="section-title" id="secTitle">জনপ্রিয় সিরিজ ও নাটক</div>
+
+        <!-- ভিডিও কার্ড লিস্ট (এখান থেকে আপনি ভিডিওর থাম্বনেইল, ক্যাপশন ও লিংক পরিবর্তন করতে পারবেন) -->
+        <div class="grid" id="videoGrid">
+            <div class="card">
+                <img src="https://via.placeholder.com/300x150" alt="Thumbnail">
+                <div class="card-body">
+                    <div class="card-title">নাটক ১</div>
+                    <div class="card-sub">ক্যাপশন: মজার কমেডি নাটক</div>
+                    <button style="margin-top:8px; width:100%; padding:4px;" onclick="alert('ডাউনলোড শুরু হচ্ছে...')">ডাউনলোড / দেখুন</button>
+                </div>
+            </div>
+            <div class="card">
+                <img src="https://via.placeholder.com/300x150" alt="Thumbnail">
+                <div class="card-body">
+                    <div class="card-title">বাংলা সিনেমা</div>
+                    <div class="card-sub">ক্যাপশন: লেটেস্ট ব্লকবাস্টার</div>
+                    <button style="margin-top:8px; width:100%; padding:4px;" onclick="alert('ডাউনলোড শুরু হচ্ছে...')">ডাউনলোড / দেখুন</button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Category Cards -->
-    <div class="category-grid">
-        <div class="category-card" onclick="alert('ছবি সেকশন শীঘ্রই আসছে!')">
-            <h2>ছবি</h2>
-            <p>লেটেস্ট বাংলা সিনেমার কালেকশন</p>
-        </div>
-        <div class="category-card" onclick="alert('নাটক সেকশন শীঘ্রই আসছে!')">
-            <h2>নাটক</h2>
-            <p>জনপ্রিয় সব বাংলা নাটক</p>
-        </div>
-        <div class="category-card" onclick="alert('গান সেকশন শীঘ্রই আসছে!')">
-            <h2>গান</h2>
-            <p>বাংলা অডিও এবং ভিডিও গান</p>
-        </div>
+    <!-- নিচের নেভিগেশন বার -->
+    <div class="bottom-nav">
+        <div class="nav-item active">🏠 হোম</div>
+        <div class="nav-item">🎬 সিরিজ</div>
+        <div class="nav-item">📺 টিভি</div>
+        <div class="nav-item">❤️ ফেভারিট</div>
+        <div class="nav-item">👤 প্রফাইল</div>
     </div>
-</div>
 
-<!-- Hidden Ad Zone for Auto-Impressions -->
-<div id="ad-zone">
-    <!-- আপনার দেওয়া OMG10 এবং অন্য লিংকগুলো এখানে বসবে -->
-    <iframe src="https://omg10.com/4/11896491" width="300" height="250"></iframe>
-    <iframe src="https://wwp.giriuhot.com/redirect-zone/47d42437" width="300" height="250"></iframe>
-    <iframe src="https://omg10.com/4/11896491" width="300" height="250"></iframe>
-    <iframe src="https://wwp.giriuhot.com/redirect-zone/47d42437" width="300" height="250"></iframe>
-</div>
+    <script>
+        // থিম পরিবর্তনের ফাংশন (ব্ল্যাক এবং হোয়াইট মোড)
+        function toggleTheme() {
+            const body = document.body;
+            if(body.getAttribute('data-theme') === 'dark') {
+                body.setAttribute('data-theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+            }
+        }
 
-<script>
-    // Slider Functionality
-    let slideIndex = 0;
-    const slider = document.getElementById('autoSlider');
-    const slides = document.querySelectorAll('.slide');
-    const navBtns = document.querySelectorAll('.nav-btn');
-    const totalSlides = slides.length;
-
-    function showSlide(index) {
-        slider.style.transform = `translateX(-${index * 100}%)`;
-        navBtns.forEach((btn, i) => {
-            btn.classList.toggle('active', i === index);
-        });
-    }
-
-    function nextSlide() {
-        slideIndex = (slideIndex + 1) % totalSlides;
-        showSlide(slideIndex);
-    }
-
-    // Auto-slide every 3 seconds
-    setInterval(nextSlide, 3000);
-
-    // Auto-Impression Handler (Ensures ads are loaded)
-    window.onload = function() {
-        const adZone = document.getElementById('ad-zone');
-        // Force reflow to ensure iframes start loading
-        adZone.style.display = 'block';
-    };
-
-</script>
-
+        // ভাষা পরিবর্তনের ফাংশন (বাংলা ও ইংরেজি)
+        function changeLanguage() {
+            const lang = document.getElementById('langSelect').value;
+            if(lang === 'en') {
+                document.getElementById('appTitle').innerText = 'Movie Hub BD';
+                document.getElementById('secTitle').innerText = 'Popular Series & Dramas';
+                document.getElementById('bannerText').innerText = 'Bachelor Point Season 5 - New Episode';
+            } else {
+                document.getElementById('appTitle').innerText = 'Movie Hub BD';
+                document.getElementById('secTitle').innerText = 'জনপ্রিয় সিরিজ ও নাটক';
+                document.getElementById('bannerText').innerText = 'ব্যাচেলর পয়েন্ট সিজন ৫ - নতুন এপিসোড';
+            }
+        }
+    </script>
 </body>
 </html>
