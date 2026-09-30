@@ -56,19 +56,31 @@
         .container {
             padding: 15px;
         }
+        /* সার্চ বক্স */
+        .search-box {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 14px;
+            box-sizing: border-box;
+        }
         .banner {
             width: 100%;
-            height: 180px;
+            height: 160px;
             background: linear-gradient(45deg, #ff416c, #ff4b2b);
             border-radius: 12px;
             display: flex;
             align-items: flex-end;
             padding: 15px;
             box-sizing: border-box;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             color: #fff;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .section-title {
             font-size: 16px;
@@ -88,7 +100,7 @@
         }
         .card img {
             width: 100%;
-            height: 120px;
+            height: 110px;
             object-fit: cover;
         }
         .card-body {
@@ -100,8 +112,22 @@
             margin-bottom: 5px;
         }
         .card-sub {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--secondary-text);
+            margin-bottom: 8px;
+        }
+        .watch-btn {
+            display: block;
+            width: 100%;
+            padding: 6px;
+            background: var(--accent-color);
+            color: white;
+            text-align: center;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: bold;
+            box-sizing: border-box;
         }
         /* Bottom Nav */
         .bottom-nav {
@@ -124,15 +150,6 @@
         .nav-item.active {
             color: var(--accent-color);
         }
-        .ad-space {
-            background: #2a2d3d;
-            padding: 15px;
-            text-align: center;
-            border-radius: 8px;
-            margin: 20px 0;
-            color: #888;
-            font-size: 12px;
-        }
     </style>
 </head>
 <body data-theme="dark">
@@ -149,40 +166,43 @@
     </header>
 
     <div class="container">
-        <!-- স্লাইডার ব্যানার -->
+        <!-- সার্চ করার অপশন -->
+        <input type="text" id="searchInput" class="search-box" placeholder="নাটক বা সিনেমা খুঁজুন..." onkeyup="searchMovies()">
+
         <div class="banner" id="bannerText">
             ব্যাচেলর পয়েন্ট সিজন ৫ - নতুন এপিসোড
         </div>
 
-        <!-- অ্যাড বসানোর জায়গা (এখানে আপনার এডসেন্স বা অন্য অ্যাড কোড বসাতে পারবেন) -->
-        <div class="ad-space">
-            [ এখানে আপনার বিজ্ঞাপন (Ads) কোড বসান ]
-        </div>
-
         <div class="section-title" id="secTitle">জনপ্রিয় সিরিজ ও নাটক</div>
 
-        <!-- ভিডিও কার্ড লিস্ট (এখান থেকে আপনি ভিডিওর থাম্বনেইল, ক্যাপশন ও লিংক পরিবর্তন করতে পারবেন) -->
+        <!-- ভিডিও লিস্ট (এখানেই আপনার ভিডিওগুলো থাকবে) -->
         <div class="grid" id="videoGrid">
-            <div class="card">
+            
+            <!-- ভিডিও ১ -->
+            <div class="card" data-title="নাটক ১ ব্যাচেলর পয়েন্ট comedy">
                 <img src="https://via.placeholder.com/300x150" alt="Thumbnail">
                 <div class="card-body">
                     <div class="card-title">নাটক ১</div>
-                    <div class="card-sub">ক্যাপশন: মজার কমেডি নাটক</div>
-                    <button style="margin-top:8px; width:100%; padding:4px;" onclick="alert('ডাউনলোড শুরু হচ্ছে...')">ডাউনলোড / দেখুন</button>
+                    <div class="card-sub">মজার কমেডি নাটক</div>
+                    <!-- এখানে '#' এর জায়গায় আপনার ভিডিওর আসল লিংক বসাবেন -->
+                    <a href="https://t.me" target="_blank" class="watch-btn">দেখুন / ডাউনলোড</a>
                 </div>
             </div>
-            <div class="card">
+
+            <!-- ভিডিও ২ -->
+            <div class="card" data-title="বাংলা সিনেমা সিনেমা ফুল মুভি">
                 <img src="https://via.placeholder.com/300x150" alt="Thumbnail">
                 <div class="card-body">
                     <div class="card-title">বাংলা সিনেমা</div>
-                    <div class="card-sub">ক্যাপশন: লেটেস্ট ব্লকবাস্টার</div>
-                    <button style="margin-top:8px; width:100%; padding:4px;" onclick="alert('ডাউনলোড শুরু হচ্ছে...')">ডাউনলোড / দেখুন</button>
+                    <div class="card-sub">লেটেস্ট ব্লকবাস্টার মুভি</div>
+                    <!-- এখানে '#' এর জায়গায় আপনার ভিডিওর আসল লিংক বসাবেন -->
+                    <a href="https://t.me" target="_blank" class="watch-btn">দেখুন / ডাউনলোড</a>
                 </div>
             </div>
+
         </div>
     </div>
 
-    <!-- নিচের নেভিগেশন বার -->
     <div class="bottom-nav">
         <div class="nav-item active">🏠 হোম</div>
         <div class="nav-item">🎬 সিরিজ</div>
@@ -192,7 +212,6 @@
     </div>
 
     <script>
-        // থিম পরিবর্তনের ফাংশন (ব্ল্যাক এবং হোয়াইট মোড)
         function toggleTheme() {
             const body = document.body;
             if(body.getAttribute('data-theme') === 'dark') {
@@ -202,17 +221,33 @@
             }
         }
 
-        // ভাষা পরিবর্তনের ফাংশন (বাংলা ও ইংরেজি)
         function changeLanguage() {
             const lang = document.getElementById('langSelect').value;
             if(lang === 'en') {
                 document.getElementById('appTitle').innerText = 'Movie Hub BD';
                 document.getElementById('secTitle').innerText = 'Popular Series & Dramas';
+                document.getElementById('searchInput').placeholder = 'Search movies or dramas...';
                 document.getElementById('bannerText').innerText = 'Bachelor Point Season 5 - New Episode';
             } else {
                 document.getElementById('appTitle').innerText = 'Movie Hub BD';
                 document.getElementById('secTitle').innerText = 'জনপ্রিয় সিরিজ ও নাটক';
+                document.getElementById('searchInput').placeholder = 'নাটক বা সিনেমা খুঁজুন...';
                 document.getElementById('bannerText').innerText = 'ব্যাচেলর পয়েন্ট সিজন ৫ - নতুন এপিসোড';
+            }
+        }
+
+        // সার্চ করার জাভাস্ক্রিপ্ট ফাংশন
+        function searchMovies() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let cards = document.getElementsByClassName('card');
+            
+            for (let i = 0; i < cards.length; i++) {
+                let title = cards[i].getAttribute('data-title').toLowerCase();
+                if (title.includes(input)) {
+                    cards[i].style.display = "";
+                } else {
+                    cards[i].style.display = "none";
+                }
             }
         }
     </script>
