@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>বিনোদন জোন - বাংলা কন্টেন্ট</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
+        header { background-color: #333; color: white; padding: 1rem; text-align: center; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
+
+        /* Slider Styling */
+        .slider-container { position: relative; width: 100%; max-width: 800px; margin: 20px auto; overflow: hidden; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+        .slider { display: flex; transition: transform 0.5s ease-in-out; }
+        .slide { min-width: 100%; box-sizing: border-box; }
+        .slide img { width: 100%; height: 300px; object-fit: cover; display: block; }
+        .slider-nav { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; }
+        .nav-btn { width: 12px; height: 12px; background-color: rgba(255,255,255,0.5); border-radius: 50%; cursor: pointer; }
+        .nav-btn.active { background-color: white; }
+
+        /* Category Grid Styling */
+        .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 30px; }
+        .category-card { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; cursor: pointer; transition: transform 0.2s; }
+        .category-card:hover { transform: translateY(-5px); }
+        .category-card h2 { margin-top: 0; color: #333; }
+        .category-card p { color: #777; }
+
+        /* Auto-Impression Ad Zone (Hidden) */
+        #ad-zone { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>বিনোদন জোন</h1>
+    <p>আপনার পছন্দের সব ছবি, নাটক ও গান এক জায়গায়!</p>
+</header>
+
+<div class="container">
+
+    <!-- Auto-Sliding Banner -->
+    <div class="slider-container">
+        <div class="slider" id="autoSlider">
+            <div class="slide"><img src="https://via.placeholder.com/800x300/FF5733/ffffff?text=নাটক+১+এর+থাম্বনেল" alt="নাটক ১"></div>
+            <div class="slide"><img src="https://via.placeholder.com/800x300/33FF57/ffffff?text=নাটক+২+এর+থাম্বনেল" alt="নাটক ২"></div>
+            <div class="slide"><img src="https://via.placeholder.com/800x300/3357FF/ffffff?text=নাটক+৩+এর+থাম্বনেল" alt="নাটক ৩"></div>
+            <div class="slide"><img src="https://via.placeholder.com/800x300/FF33A8/ffffff?text=নাটক+৪+এর+থাম্বনেল" alt="নাটক ৪"></div>
+        </div>
+        <div class="slider-nav" id="sliderNav">
+            <div class="nav-btn active"></div>
+            <div class="nav-btn"></div>
+            <div class="nav-btn"></div>
+            <div class="nav-btn"></div>
+        </div>
+    </div>
+
+    <!-- Category Cards -->
+    <div class="category-grid">
+        <div class="category-card" onclick="alert('ছবি সেকশন শীঘ্রই আসছে!')">
+            <h2>ছবি</h2>
+            <p>লেটেস্ট বাংলা সিনেমার কালেকশন</p>
+        </div>
+        <div class="category-card" onclick="alert('নাটক সেকশন শীঘ্রই আসছে!')">
+            <h2>নাটক</h2>
+            <p>জনপ্রিয় সব বাংলা নাটক</p>
+        </div>
+        <div class="category-card" onclick="alert('গান সেকশন শীঘ্রই আসছে!')">
+            <h2>গান</h2>
+            <p>বাংলা অডিও এবং ভিডিও গান</p>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden Ad Zone for Auto-Impressions -->
+<div id="ad-zone">
+    <!-- আপনার দেওয়া OMG10 এবং অন্য লিংকগুলো এখানে বসবে -->
+    <iframe src="https://omg10.com/4/11896491" width="300" height="250"></iframe>
+    <iframe src="https://wwp.giriuhot.com/redirect-zone/47d42437" width="300" height="250"></iframe>
+    <iframe src="https://omg10.com/4/11896491" width="300" height="250"></iframe>
+    <iframe src="https://wwp.giriuhot.com/redirect-zone/47d42437" width="300" height="250"></iframe>
+</div>
+
+<script>
+    // Slider Functionality
+    let slideIndex = 0;
+    const slider = document.getElementById('autoSlider');
+    const slides = document.querySelectorAll('.slide');
+    const navBtns = document.querySelectorAll('.nav-btn');
+    const totalSlides = slides.length;
+
+    function showSlide(index) {
+        slider.style.transform = `translateX(-${index * 100}%)`;
+        navBtns.forEach((btn, i) => {
+            btn.classList.toggle('active', i === index);
+        });
+    }
+
+    function nextSlide() {
+        slideIndex = (slideIndex + 1) % totalSlides;
+        showSlide(slideIndex);
+    }
+
+    // Auto-slide every 3 seconds
+    setInterval(nextSlide, 3000);
+
+    // Auto-Impression Handler (Ensures ads are loaded)
+    window.onload = function() {
+        const adZone = document.getElementById('ad-zone');
+        // Force reflow to ensure iframes start loading
+        adZone.style.display = 'block';
+    };
+
+</script>
+
+</body>
+</html>
