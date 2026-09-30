@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -135,20 +134,6 @@
             font-size: 11px;
             color: var(--secondary-text);
             margin-bottom: 8px;
-        }
-        .watch-btn {
-            display: block;
-            width: 100%;
-            padding: 8px;
-            background: var(--accent-color);
-            color: white;
-            text-align: center;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: bold;
-            box-sizing: border-box;
-            cursor: pointer;
         }
         .delete-btn {
             position: absolute;
@@ -304,16 +289,13 @@
     <div class="container">
         <input type="text" id="searchInput" class="search-box" placeholder="নাটক বা সিনেমা খুঁজুন..." onkeyup="searchMovies()">
 
-        <!-- অটো ব্যানার -->
         <div class="banner" id="bannerBox" onclick="clickBanner()" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://via.placeholder.com/600x300');">
             <span id="bannerText">Movie Hub BD - নতুন মুভি ও নাটক দেখুন</span>
         </div>
 
         <div class="section-title" id="secTitle">জনপ্রিয় সিরিজ ও নাটক</div>
 
-        <div class="grid" id="videoGrid">
-            <!-- ভিডিও কার্ডগুলো এখানে লোড হবে -->
-        </div>
+        <div class="grid" id="videoGrid"></div>
     </div>
 
     <!-- ১৫ সেকেন্ড টাইমার -->
@@ -361,11 +343,10 @@
             <label>থাম্বনেইল ছবি আপলোড করুন:</label>
             <input type="file" id="newImgFile" accept="image/*" style="background:#222; padding:8px; border-radius:5px; margin-bottom:10px; color:#fff; width:100%; box-sizing:border-box;">
 
-            <!-- সরাসরি ভিডিও ফাইল আপলোড অপশন -->
-            <label>সরাসরি ভিডিও ফাইল আপলোড করুন (.mp4):</label>
+            <!-- লোকাল ফাইল অবজেক্ট ইউআরএল মোড -->
+            <label>ভিডিও ফাইল সিলেক্ট করুন (.mp4):</label>
             <input type="file" id="newVideoFile" accept="video/*" style="background:#222; padding:8px; border-radius:5px; margin-bottom:10px; color:#fff; width:100%; box-sizing:border-box;">
 
-            <!-- আপনার মনের মতো বিজ্ঞাপনের লিংক বসানোর অপশন -->
             <label>বিজ্ঞাপনের লিংক (Ad Link):</label>
             <input type="text" id="newAdLink" placeholder="বিজ্ঞাপনের লিংক এখানে দিন">
 
@@ -399,7 +380,6 @@
             const countDisplay = document.getElementById('countdownNumber');
             modal.style.display = 'flex';
 
-            // অ্যাডমিনের দেওয়া অ্যাড লিংক ওপেন হবে
             if(adUrl) {
                 window.open(adUrl, '_blank');
             }
@@ -464,23 +444,20 @@
             let videoFileInput = document.getElementById('newVideoFile');
 
             if(title && videoFileInput.files && videoFileInput.files[0]) {
-                let videoReader = new FileReader();
-                videoReader.onload = function(e) {
-                    let videoDataUrl = e.target.result;
+                let videoFile = videoFileInput.files[0];
+                let videoObjectUrl = URL.createObjectURL(videoFile); // বড় ভিডিওর মেমোরি সমস্যা সমাধান
 
-                    if (imgFileInput.files && imgFileInput.files[0]) {
-                        let imgReader = new FileReader();
-                        imgReader.onload = function(imgEvent) {
-                            saveVideoData(category, title, sub, imgEvent.target.result, videoDataUrl, adLink);
-                        }
-                        imgReader.readAsDataURL(imgFileInput.files[0]);
-                    } else {
-                        saveVideoData(category, title, sub, 'https://via.placeholder.com/300x150', videoDataUrl, adLink);
+                if (imgFileInput.files && imgFileInput.files[0]) {
+                    let imgReader = new FileReader();
+                    imgReader.onload = function(imgEvent) {
+                        saveVideoData(category, title, sub, imgEvent.target.result, videoObjectUrl, adLink);
                     }
+                    imgReader.readAsDataURL(imgFileInput.files[0]);
+                } else {
+                    saveVideoData(category, title, sub, 'https://via.placeholder.com/300x150', videoObjectUrl, adLink);
                 }
-                videoReader.readAsDataURL(videoFileInput.files[0]);
             } else {
-                alert('দয়া করে নাম এবং একটি ভিডিও ফাইল সিলেক্ট করুন!');
+                alert('দয়া করে নাটকের নাম এবং একটি ভিডিও ফাইল সিলেক্ট করুন!');
             }
         }
 
@@ -488,17 +465,21 @@
             let videos = JSON.parse(localStorage.getItem('movieHubVideos')) || [];
             let newVid = { category, title, sub, imgSrc, videoUrl, adLink };
             videos.unshift(newVid);
-            localStorage.setItem('movieHubVideos', JSON.stringify(videos));
+            
+            try {
+                localStorage.setItem('movieHubVideos', JSON.stringify(videos));
+                loadVideos();
+                closeUploadPanel();
+                alert('সফলভাবে ভিডিও আপলোড ও পাবলিশ করা হয়েছে!');
 
-            loadVideos();
-            closeUploadPanel();
-            alert('সফলভাবে ভিডিও আপলোড ও পাবলিশ করা হয়েছে!');
-
-            document.getElementById('newTitle').value = '';
-            document.getElementById('newSub').value = '';
-            document.getElementById('newAdLink').value = '';
-            document.getElementById('newImgFile').value = '';
-            document.getElementById('newVideoFile').value = '';
+                document.getElementById('newTitle').value = '';
+                document.getElementById('newSub').value = '';
+                document.getElementById('newAdLink').value = '';
+                document.getElementById('newImgFile').value = '';
+                document.getElementById('newVideoFile').value = '';
+            } catch (e) {
+                alert('স্টোরেজ ফুল হয়ে গেছে! দয়া করে ছোট সাইজের ছবি বা ভিডিও ব্যবহার করুন।');
+            }
         }
 
         function loadVideos() {
@@ -529,7 +510,7 @@
                     <div class="card-body">
                         <div class="card-title">${vid.title}</div>
                         <div class="card-sub">${vid.sub}</div>
-                        <button class="watch-btn" onclick="startAdTimer('${vid.videoUrl}', '${vid.adLink}')">ভিডিও দেখুন</button>
+                        <button class="watch-btn" style="display:block; width:100%; padding:8px; background:var(--accent-color); color:white; text-align:center; border-radius:5px; border:none; font-weight:bold; cursor:pointer;" onclick="startAdTimer('${vid.videoUrl}', '${vid.adLink}')">ভিডিও দেখুন</button>
                     </div>
                 `;
                 grid.appendChild(newCard);
@@ -607,3 +588,4 @@
     </script>
 </body>
 </html>
+
