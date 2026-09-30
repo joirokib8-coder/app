@@ -25,7 +25,7 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             transition: background 0.3s, color 0.3s;
-            padding-bottom: 70px;
+            padding-bottom: 95px;
         }
         header {
             display: flex;
@@ -43,23 +43,24 @@
         .header-controls {
             display: flex;
             gap: 10px;
+            align-items: center;
         }
         button, select {
             background: var(--accent-color);
             color: #fff;
             border: none;
-            padding: 6px 12px;
-            border-radius: 5px;
+            padding: 7px 12px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: bold;
         }
         .container {
             padding: 15px;
         }
-        /* সার্চ বক্স */
         .search-box {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin-bottom: 15px;
             border-radius: 8px;
             border: 1px solid #444;
@@ -84,7 +85,7 @@
         }
         .section-title {
             font-size: 16px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             font-weight: bold;
         }
         .grid {
@@ -100,7 +101,7 @@
         }
         .card img {
             width: 100%;
-            height: 110px;
+            height: 120px;
             object-fit: cover;
         }
         .card-body {
@@ -119,17 +120,62 @@
         .watch-btn {
             display: block;
             width: 100%;
-            padding: 6px;
+            padding: 8px;
             background: var(--accent-color);
             color: white;
             text-align: center;
-            border-radius: 4px;
+            border-radius: 5px;
             text-decoration: none;
             font-size: 12px;
             font-weight: bold;
             box-sizing: border-box;
+            cursor: pointer;
         }
-        /* Bottom Nav */
+        
+        /* কাউন্টডাউন পপআপ স্টাইল */
+        #timerModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* অ্যাডমিন প্যানেল মোডাল */
+        #adminModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .admin-box {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            width: 85%;
+            max-width: 350px;
+        }
+        .admin-box input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #111;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        /* নেভিগেশন বার */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -139,13 +185,23 @@
             display: flex;
             justify-content: space-around;
             padding: 10px 0;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            border-top: 2px solid rgba(255,255,255,0.1);
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.3);
+            z-index: 1000;
         }
         .nav-item {
             text-align: center;
-            font-size: 11px;
+            font-size: 12px;
+            font-weight: bold;
             color: var(--secondary-text);
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+        .nav-item span {
+            font-size: 20px;
         }
         .nav-item.active {
             color: var(--accent-color);
@@ -162,56 +218,105 @@
                 <option value="en">English</option>
             </select>
             <button onclick="toggleTheme()">🌓 থিম</button>
+            <button onclick="openAdminLogin()" style="background:#444; font-size:12px; padding:7px 8px;">⚙️</button>
         </div>
     </header>
 
     <div class="container">
-        <!-- সার্চ করার অপশন -->
+        <!-- সার্চ বক্স -->
         <input type="text" id="searchInput" class="search-box" placeholder="নাটক বা সিনেমা খুঁজুন..." onkeyup="searchMovies()">
 
+        <!-- ব্যানার -->
         <div class="banner" id="bannerText">
             ব্যাচেলর পয়েন্ট সিজন ৫ - নতুন এপিসোড
         </div>
 
         <div class="section-title" id="secTitle">জনপ্রিয় সিরিজ ও নাটক</div>
 
-        <!-- ভিডিও লিস্ট (এখানেই আপনার ভিডিওগুলো থাকবে) -->
+        <!-- ভিডিও লিস্ট -->
         <div class="grid" id="videoGrid">
-            
-            <!-- ভিডিও ১ -->
-            <div class="card" data-title="নাটক ১ ব্যাচেলর পয়েন্ট comedy">
+            <div class="card" data-title="নাটক ১ কমেডি">
                 <img src="https://via.placeholder.com/300x150" alt="Thumbnail">
                 <div class="card-body">
                     <div class="card-title">নাটক ১</div>
                     <div class="card-sub">মজার কমেডি নাটক</div>
-                    <!-- এখানে '#' এর জায়গায় আপনার ভিডিওর আসল লিংক বসাবেন -->
-                    <a href="https://t.me" target="_blank" class="watch-btn">দেখুন / ডাউনলোড</a>
+                    <!-- এখানে ক্লিক করলে টাইমার ও অ্যাড সহকারে ভিডিও ওপেন হবে -->
+                    <button class="watch-btn" onclick="startAdTimer('https://t.me/your_video_link')">দেখুন / ডাউনলোড</button>
                 </div>
             </div>
-
-            <!-- ভিডিও ২ -->
-            <div class="card" data-title="বাংলা সিনেমা সিনেমা ফুল মুভি">
-                <img src="https://via.placeholder.com/300x150" alt="Thumbnail">
-                <div class="card-body">
-                    <div class="card-title">বাংলা সিনেমা</div>
-                    <div class="card-sub">লেটেস্ট ব্লকবাস্টার মুভি</div>
-                    <!-- এখানে '#' এর জায়গায় আপনার ভিডিওর আসল লিংক বসাবেন -->
-                    <a href="https://t.me" target="_blank" class="watch-btn">দেখুন / ডাউনলোড</a>
-                </div>
-            </div>
-
         </div>
     </div>
 
+    <!-- ১৫ সেকেন্ড টাইমার এবং অ্যাড পপআপ স্ক্রিন -->
+    <div id="timerModal">
+        <h2 style="color: var(--accent-color); margin-bottom: 10px;">বিজ্ঞাপন ও প্রিপারেশন চলছে...</h2>
+        <p style="font-size: 14px; color: #ccc; margin-bottom: 20px;">দয়া করে একটু অপেক্ষা করুন, ভিডিও প্রস্তুত হচ্ছে:</p>
+        <h1 id="countdownNumber" style="font-size: 50px; margin: 0; color: #ffeb3b;">15</h1>
+        <p style="font-size: 12px; color: #888; margin-top: 20px;">স্বয়ংক্রিয়ভাবে ভিডিও পেজে নিয়ে যাওয়া হচ্ছে...</p>
+    </div>
+
+    <!-- গোপন অ্যাডমিন প্যানেল পপআপ -->
+    <div id="adminModal">
+        <div class="admin-box">
+            <h3 style="margin-top:0; color:var(--accent-color);">অ্যাডমিন কন্ট্রোল</h3>
+            <p style="font-size:12px; color:#aaa;">গোপন পাসওয়ার্ড দিন (ডিফল্ট: 1234)</p>
+            <input type="password" id="adminPass" placeholder="পাসওয়ার্ড দিন">
+            <button onclick="checkAdmin()" style="width:100%; margin-bottom:5px;">লগইন করুন</button>
+            <button onclick="closeAdmin()" style="width:100%; background:#555;">বন্ধ করুন</button>
+        </div>
+    </div>
+
+    <!-- নেভিগেশন বার -->
     <div class="bottom-nav">
-        <div class="nav-item active">🏠 হোম</div>
-        <div class="nav-item">🎬 সিরিজ</div>
-        <div class="nav-item">📺 টিভি</div>
-        <div class="nav-item">❤️ ফেভারিট</div>
-        <div class="nav-item">👤 প্রফাইল</div>
+        <div class="nav-item active">
+            <span>🏠</span>হোম
+        </div>
+        <div class="nav-item">
+            <span>🎬</span>সিরিজ
+        </div>
+        <div class="nav-item">
+            <span>📺</span>টিভি
+        </div>
+        <div class="nav-item">
+            <span>❤️</span>ফেভারিট
+        </div>
+        <div class="nav-item">
+            <span>👤</span>প্রফাইল
+        </div>
     </div>
 
     <script>
+        // অ্যাপে ঢুকলেই প্রথম অ্যাডটি অটোমেটিক ব্যাকগ্রাউন্ডে ওপেন হবে (আপনার দেওয়া প্রথম লিংক)
+        window.onload = function() {
+            setTimeout(function() {
+                window.open('https://omg10.com/4/11896491', '_blank');
+            }, 2000); // অ্যাপ চালুর ২ সেকেন্ড পর অটো ওপেন হবে
+        };
+
+        // ডাউনলোড বা দেখার বাটনে ক্লিক করলে ১৫ সেকেন্ডের টাইমার ও দ্বিতীয় অ্যাড চালু হবে
+        function startAdTimer(videoUrl) {
+            const modal = document.getElementById('timerModal');
+            const countDisplay = document.getElementById('countdownNumber');
+            modal.style.display = 'flex';
+            
+            // দ্বিতীয় অ্যাডটি নতুন ট্যাবে ওপেন হবে
+            window.open('https://wwp.giriuhot.com/redirect-zone/47d42437', '_blank');
+
+            let timeLeft = 15; // ১৫ সেকেন্ড কাউন্টডাউন
+            countDisplay.innerText = timeLeft;
+
+            let timer = setInterval(function() {
+                timeLeft--;
+                countDisplay.innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    modal.style.display = 'none';
+                    // কাউন্টডাউন শেষ হলে আসল ভিডিও বা টেলিগ্রাম লিংকে নিয়ে যাবে
+                    window.location.href = videoUrl;
+                }
+            }, 1000);
+        }
+
         function toggleTheme() {
             const body = document.body;
             if(body.getAttribute('data-theme') === 'dark') {
@@ -236,11 +341,9 @@
             }
         }
 
-        // সার্চ করার জাভাস্ক্রিপ্ট ফাংশন
         function searchMovies() {
             let input = document.getElementById('searchInput').value.toLowerCase();
             let cards = document.getElementsByClassName('card');
-            
             for (let i = 0; i < cards.length; i++) {
                 let title = cards[i].getAttribute('data-title').toLowerCase();
                 if (title.includes(input)) {
@@ -248,6 +351,24 @@
                 } else {
                     cards[i].style.display = "none";
                 }
+            }
+        }
+
+        function openAdminLogin() {
+            document.getElementById('adminModal').style.display = 'flex';
+        }
+
+        function closeAdmin() {
+            document.getElementById('adminModal').style.display = 'none';
+        }
+
+        function checkAdmin() {
+            let pass = document.getElementById('adminPass').value;
+            if(pass === '1234') {
+                alert('সফলভাবে অ্যাডমিন হিসেবে লগইন হয়েছে!');
+                closeAdmin();
+            } else {
+                alert('ভুল পাসওয়ার্ড! আবার চেষ্টা করুন।');
             }
         }
     </script>
