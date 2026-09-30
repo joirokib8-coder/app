@@ -98,6 +98,7 @@
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
         }
         .card img {
             width: 100%;
@@ -132,7 +133,7 @@
             cursor: pointer;
         }
         
-        /* কাউন্টডাউন পপআপ স্টাইল */
+        /* টাইমার পপআপ স্টাইল */
         #timerModal {
             display: none;
             position: fixed;
@@ -147,8 +148,8 @@
             padding: 20px;
         }
 
-        /* অ্যাডমিন প্যানেল মোডাল */
-        #adminModal {
+        /* অ্যাডমিন লগইন ও আপলোড প্যানেল মডাল */
+        #adminModal, #uploadPanelModal {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -163,8 +164,10 @@
             border-radius: 10px;
             width: 85%;
             max-width: 350px;
+            max-height: 90vh;
+            overflow-y: auto;
         }
-        .admin-box input {
+        .admin-box input, .admin-box textarea {
             width: 100%;
             padding: 10px;
             margin-bottom: 10px;
@@ -173,6 +176,7 @@
             color: #fff;
             border-radius: 5px;
             box-sizing: border-box;
+            font-size: 14px;
         }
 
         /* নেভিগেশন বার */
@@ -233,15 +237,14 @@
 
         <div class="section-title" id="secTitle">জনপ্রিয় সিরিজ ও নাটক</div>
 
-        <!-- ভিডিও লিস্ট -->
+        <!-- ভিডিও লিস্ট (এখানে নতুন ভিডিও যোগ হবে) -->
         <div class="grid" id="videoGrid">
             <div class="card" data-title="নাটক ১ কমেডি">
                 <img src="https://via.placeholder.com/300x150" alt="Thumbnail">
                 <div class="card-body">
                     <div class="card-title">নাটক ১</div>
                     <div class="card-sub">মজার কমেডি নাটক</div>
-                    <!-- এখানে ক্লিক করলে টাইমার ও অ্যাড সহকারে ভিডিও ওপেন হবে -->
-                    <button class="watch-btn" onclick="startAdTimer('https://t.me/your_video_link')">দেখুন / ডাউনলোড</button>
+                    <button class="watch-btn" onclick="startAdTimer('https://t.me')">দেখুন / ডাউনলোড</button>
                 </div>
             </div>
         </div>
@@ -255,14 +258,37 @@
         <p style="font-size: 12px; color: #888; margin-top: 20px;">স্বয়ংক্রিয়ভাবে ভিডিও পেজে নিয়ে যাওয়া হচ্ছে...</p>
     </div>
 
-    <!-- গোপন অ্যাডমিন প্যানেল পপআপ -->
+    <!-- গোপন অ্যাডমিন পাসওয়ার্ড পপআপ -->
     <div id="adminModal">
         <div class="admin-box">
-            <h3 style="margin-top:0; color:var(--accent-color);">অ্যাডমিন কন্ট্রোল</h3>
-            <p style="font-size:12px; color:#aaa;">গোপন পাসওয়ার্ড দিন (ডিফল্ট: 1234)</p>
-            <input type="password" id="adminPass" placeholder="পাসওয়ার্ড দিন">
+            <h3 style="margin-top:0; color:var(--accent-color);">অ্যাডমিন লগইন</h3>
+            <p style="font-size:12px; color:#aaa;">পাসওয়ার্ড দিন (ডিফল্ট: 1234)</p>
+            <input type="password" id="adminPass" placeholder="পাসওয়ার্ড">
             <button onclick="checkAdmin()" style="width:100%; margin-bottom:5px;">লগইন করুন</button>
             <button onclick="closeAdmin()" style="width:100%; background:#555;">বন্ধ করুন</button>
+        </div>
+    </div>
+
+    <!-- আসল ভিডিও আপলোড বা প্যানেল ফর্ম -->
+    <div id="uploadPanelModal">
+        <div class="admin-box">
+            <h3 style="margin-top:0; color:var(--accent-color);">নতুন ভিডিও আপলোড প্যানেল</h3>
+            <p style="font-size:11px; color:#aaa; margin-bottom:10px;">এখানে তথ্য দিয়ে পাবলিশ করলেই অ্যাপে নতুন ভিডিও চলে আসবে:</p>
+            
+            <label style="font-size:12px;">নাটক বা সিনেমার নাম:</label>
+            <input type="text" id="newTitle" placeholder="যেমন: নতুন নাটক পর্ব ১">
+
+            <label style="font-size:12px;">ছোট বিবরণ (Sub-title):</label>
+            <input type="text" id="newSub" placeholder="যেমন: মজার নাটক - ফুল এইচডি">
+
+            <label style="font-size:12px;">থাম্বনেইল ছবির লিংক (Image URL):</label>
+            <input type="text" id="newImg" placeholder="ছবির ডাইরেক্ট লিংক দিন">
+
+            <label style="font-size:12px;">ভিডিও বা টেলিগ্রাম লিংক:</label>
+            <input type="text" id="newLink" placeholder="https://t.me/your_channel">
+
+            <button onclick="addNewVideo()" style="width:100%; margin-bottom:5px; background:#4CAF50;">পাবলিশ করুন</button>
+            <button onclick="closeUploadPanel()" style="width:100%; background:#555;">প্যানেল বন্ধ করুন</button>
         </div>
     </div>
 
@@ -286,23 +312,22 @@
     </div>
 
     <script>
-        // অ্যাপে ঢুকলেই প্রথম অ্যাডটি অটোমেটিক ব্যাকগ্রাউন্ডে ওপেন হবে (আপনার দেওয়া প্রথম লিংক)
+        // অ্যাপে ঢুকলেই প্রথম অ্যাড অটো ওপেন হবে
         window.onload = function() {
             setTimeout(function() {
                 window.open('https://omg10.com/4/11896491', '_blank');
-            }, 2000); // অ্যাপ চালুর ২ সেকেন্ড পর অটো ওপেন হবে
+            }, 2000);
         };
 
-        // ডাউনলোড বা দেখার বাটনে ক্লিক করলে ১৫ সেকেন্ডের টাইমার ও দ্বিতীয় অ্যাড চালু হবে
+        // বাটনে ক্লিক করলে ১৫ সেকেন্ডের টাইমার ও দ্বিতীয় অ্যাড চালু হবে
         function startAdTimer(videoUrl) {
             const modal = document.getElementById('timerModal');
             const countDisplay = document.getElementById('countdownNumber');
             modal.style.display = 'flex';
             
-            // দ্বিতীয় অ্যাডটি নতুন ট্যাবে ওপেন হবে
             window.open('https://wwp.giriuhot.com/redirect-zone/47d42437', '_blank');
 
-            let timeLeft = 15; // ১৫ সেকেন্ড কাউন্টডাউন
+            let timeLeft = 15;
             countDisplay.innerText = timeLeft;
 
             let timer = setInterval(function() {
@@ -311,10 +336,71 @@
                 if (timeLeft <= 0) {
                     clearInterval(timer);
                     modal.style.display = 'none';
-                    // কাউন্টডাউন শেষ হলে আসল ভিডিও বা টেলিগ্রাম লিংকে নিয়ে যাবে
                     window.location.href = videoUrl;
                 }
             }, 1000);
+        }
+
+        function openAdminLogin() {
+            document.getElementById('adminModal').style.display = 'flex';
+        }
+
+        function closeAdmin() {
+            document.getElementById('adminModal').style.display = 'none';
+        }
+
+        function checkAdmin() {
+            let pass = document.getElementById('adminPass').value;
+            if(pass === '1234') {
+                closeAdmin();
+                // পাসওয়ার্ড সঠিক হলে সরাসরি আপলোড প্যানেল ওপেন হবে
+                document.getElementById('uploadPanelModal').style.display = 'flex';
+            } else {
+                alert('ভুল পাসওয়ার্ড! আবার চেষ্টা করুন।');
+            }
+        }
+
+        function closeUploadPanel() {
+            document.getElementById('uploadPanelModal').style.display = 'none';
+        }
+
+        // নতুন ভিডিও অ্যাপে যোগ করার ফাংশন
+        function addNewVideo() {
+            let title = document.getElementById('newTitle').value;
+            let sub = document.getElementById('newSub').value;
+            let img = document.getElementById('newImg').value;
+            let link = document.getElementById('newLink').value;
+
+            if(!title || !link) {
+                alert('দয়া করে অন্তত নাম এবং ভিডিও লিংক দিন!');
+                return;
+            }
+
+            let grid = document.getElementById('videoGrid');
+            let newCard = document.createElement('div');
+            newCard.className = 'card';
+            newCard.setAttribute('data-title', title.toLowerCase());
+            
+            let imgSrc = img ? img : 'https://via.placeholder.com/300x150';
+
+            newCard.innerHTML = `
+                <img src="${imgSrc}" alt="Thumbnail">
+                <div class="card-body">
+                    <div class="card-title">${title}</div>
+                    <div class="card-sub">${sub}</div>
+                    <button class="watch-btn" onclick="startAdTimer('${link}')">দেখুন / ডাউনলোড</button>
+                </div>
+            `;
+
+            grid.prepend(newCard); // নতুন ভিডিও সবার উপরে শো করবে
+            closeUploadPanel();
+            alert('সফলভাবে নতুন ভিডিও পাবলিশ করা হয়েছে!');
+            
+            // ইনপুট বক্সগুলো খালি করে দেওয়া
+            document.getElementById('newTitle').value = '';
+            document.getElementById('newSub').value = '';
+            document.getElementById('newImg').value = '';
+            document.getElementById('newLink').value = '';
         }
 
         function toggleTheme() {
@@ -351,24 +437,6 @@
                 } else {
                     cards[i].style.display = "none";
                 }
-            }
-        }
-
-        function openAdminLogin() {
-            document.getElementById('adminModal').style.display = 'flex';
-        }
-
-        function closeAdmin() {
-            document.getElementById('adminModal').style.display = 'none';
-        }
-
-        function checkAdmin() {
-            let pass = document.getElementById('adminPass').value;
-            if(pass === '1234') {
-                alert('সফলভাবে অ্যাডমিন হিসেবে লগইন হয়েছে!');
-                closeAdmin();
-            } else {
-                alert('ভুল পাসওয়ার্ড! আবার চেষ্টা করুন।');
             }
         }
     </script>
