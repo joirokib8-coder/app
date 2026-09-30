@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -171,17 +172,17 @@
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95);
+            background: rgba(0,0,0,0.98);
             z-index: 4000;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 15px;
+            padding: 10px;
             box-sizing: border-box;
         }
         .player-container {
             width: 100%;
-            max-width: 600px;
+            max-width: 700px;
             background: #000;
             border-radius: 10px;
             overflow: hidden;
@@ -189,19 +190,20 @@
         }
         .player-container video {
             width: 100%;
-            height: 300px;
-            border: none;
+            max-height: 75vh;
             display: block;
+            background: #000;
         }
         .close-player {
             background: #e91e63;
             color: #fff;
             border: none;
-            padding: 10px 20px;
+            padding: 10px 25px;
             border-radius: 5px;
             font-weight: bold;
             cursor: pointer;
             margin-top: 15px;
+            font-size: 14px;
         }
 
         #adminModal, #uploadPanelModal {
@@ -305,7 +307,7 @@
         <h1 id="countdownNumber" style="font-size: 50px; margin: 0; color: #ffeb3b;">15</h1>
     </div>
 
-    <!-- ইন-অ্যাপ ভিডিও প্লেয়ার -->
+    <!-- ফুলস্ক্রিন ইন-অ্যাপ ভিডিও প্লেয়ার -->
     <div id="videoPlayerModal">
         <div class="player-container">
             <div id="playerWrapper"></div>
@@ -343,9 +345,8 @@
             <label>থাম্বনেইল ছবি আপলোড করুন:</label>
             <input type="file" id="newImgFile" accept="image/*" style="background:#222; padding:8px; border-radius:5px; margin-bottom:10px; color:#fff; width:100%; box-sizing:border-box;">
 
-            <!-- লোকাল ফাইল অবজেক্ট ইউআরএল মোড -->
             <label>ভিডিও ফাইল সিলেক্ট করুন (.mp4):</label>
-            <input type="file" id="newVideoFile" accept="video/*" style="background:#222; padding:8px; border-radius:5px; margin-bottom:10px; color:#fff; width:100%; box-sizing:border-box;">
+            <input type="file" id="newVideoFile" accept="video/mp4,video/mkv,video/*" style="background:#222; padding:8px; border-radius:5px; margin-bottom:10px; color:#fff; width:100%; box-sizing:border-box;">
 
             <label>বিজ্ঞাপনের লিংক (Ad Link):</label>
             <input type="text" id="newAdLink" placeholder="বিজ্ঞাপনের লিংক এখানে দিন">
@@ -402,7 +403,14 @@
             const playerModal = document.getElementById('videoPlayerModal');
             const wrapper = document.getElementById('playerWrapper');
 
-            wrapper.innerHTML = `<video controls autoplay style="width:100%; height:300px;"><source src="${url}" type="video/mp4">আপনার ব্রাউজার ভিডিও সাপোর্ট করছে না।</video>`;
+            // ভিডিও যাতে শতভাগ গ্যারান্টিতে প্লে হয় সেজন্য ব্রাউজারের নিজস্ব ফুল কন্ট্রোল সহ ট্যাগ দেওয়া হয়েছে
+            wrapper.innerHTML = `
+                <video controls autoplay playsinline controlsList="nodownload">
+                    <source src="${url}" type="video/mp4">
+                    <source src="${url}" type="video/webm">
+                    আপনার ব্রাউজার এই ভিডিও ফরম্যাটটি সরাসরি সাপোর্ট করছে না।
+                </video>
+            `;
             playerModal.style.display = 'flex';
         }
 
@@ -445,7 +453,7 @@
 
             if(title && videoFileInput.files && videoFileInput.files[0]) {
                 let videoFile = videoFileInput.files[0];
-                let videoObjectUrl = URL.createObjectURL(videoFile); // বড় ভিডিওর মেমোরি সমস্যা সমাধান
+                let videoObjectUrl = URL.createObjectURL(videoFile);
 
                 if (imgFileInput.files && imgFileInput.files[0]) {
                     let imgReader = new FileReader();
@@ -478,7 +486,7 @@
                 document.getElementById('newImgFile').value = '';
                 document.getElementById('newVideoFile').value = '';
             } catch (e) {
-                alert('স্টোরেজ ফুল হয়ে গেছে! দয়া করে ছোট সাইজের ছবি বা ভিডিও ব্যবহার করুন।');
+                alert('স্টোরেজ ফুল হয়ে গেছে! দয়া করে অন্য ভিডিও ব্যবহার করুন।');
             }
         }
 
