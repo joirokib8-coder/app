@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -313,7 +312,7 @@
         <div class="section-title" id="secTitle">জনপ্রিয় সিরিজ ও নাটক</div>
 
         <div class="grid" id="videoGrid">
-            <!-- ভিডিও কার্ডগুলো এখানে স্বয়ংক্রিয়ভাবে লোড হবে -->
+            <!-- ভিডিও কার্ডগুলো এখানে লোড হবে -->
         </div>
     </div>
 
@@ -342,10 +341,10 @@
         </div>
     </div>
 
-    <!-- ভিডিও ও থাম্বনেইল আপলোড প্যানেল -->
+    <!-- ভিডিও আপলোড ও অ্যাড প্যানেল -->
     <div id="uploadPanelModal">
         <div class="admin-box">
-            <h3 style="margin-top:0; color:var(--accent-color);">ভিডিও আপলোড প্যানেল</h3>
+            <h3 style="margin-top:0; color:var(--accent-color);">ভিডিও ও অ্যাড আপলোড প্যানেল</h3>
 
             <label>ক্যাটাগরি:</label>
             <select id="newCategory">
@@ -362,8 +361,13 @@
             <label>থাম্বনেইল ছবি আপলোড করুন:</label>
             <input type="file" id="newImgFile" accept="image/*" style="background:#222; padding:8px; border-radius:5px; margin-bottom:10px; color:#fff; width:100%; box-sizing:border-box;">
 
-            <label>ভিডিওর ডাইরেক্ট লিংক (.mp4):</label>
-            <input type="text" id="newLink" placeholder="ভিডিও ফাইল বা স্ট্রিম লিংক দিন">
+            <!-- সরাসরি ভিডিও ফাইল আপলোড অপশন -->
+            <label>সরাসরি ভিডিও ফাইল আপলোড করুন (.mp4):</label>
+            <input type="file" id="newVideoFile" accept="video/*" style="background:#222; padding:8px; border-radius:5px; margin-bottom:10px; color:#fff; width:100%; box-sizing:border-box;">
+
+            <!-- আপনার মনের মতো বিজ্ঞাপনের লিংক বসানোর অপশন -->
+            <label>বিজ্ঞাপনের লিংক (Ad Link):</label>
+            <input type="text" id="newAdLink" placeholder="বিজ্ঞাপনের লিংক এখানে দিন">
 
             <button onclick="addNewVideo()" style="width:100%; margin-bottom:5px; background:#4CAF50;">পাবলিশ করুন</button>
             <button onclick="closeUploadPanel()" style="width:100%; background:#555;">প্যানেল বন্ধ করুন</button>
@@ -382,7 +386,6 @@
     <script>
         let currentBannerLink = 'https://omg10.com/4/11896491';
 
-        // পেজ লোড হওয়ার সাথে সাথে সেভ করা ভিডিওগুলো ডিসপ্লেতে নিয়ে আসা
         window.onload = function() {
             loadVideos();
         };
@@ -391,12 +394,15 @@
             window.open(currentBannerLink, '_blank');
         }
 
-        function startAdTimer(videoUrl) {
+        function startAdTimer(videoUrl, adUrl) {
             const modal = document.getElementById('timerModal');
             const countDisplay = document.getElementById('countdownNumber');
             modal.style.display = 'flex';
 
-            window.open('https://wwp.giriuhot.com/redirect-zone/47d42437', '_blank');
+            // অ্যাডমিনের দেওয়া অ্যাড লিংক ওপেন হবে
+            if(adUrl) {
+                window.open(adUrl, '_blank');
+            }
 
             let timeLeft = 15;
             countDisplay.innerText = timeLeft;
@@ -453,39 +459,46 @@
             let category = document.getElementById('newCategory').value;
             let title = document.getElementById('newTitle').value;
             let sub = document.getElementById('newSub').value;
-            let link = document.getElementById('newLink').value;
+            let adLink = document.getElementById('newAdLink').value;
             let imgFileInput = document.getElementById('newImgFile');
+            let videoFileInput = document.getElementById('newVideoFile');
 
-            if(title && link) {
-                let reader = new FileReader();
+            if(title && videoFileInput.files && videoFileInput.files[0]) {
+                let videoReader = new FileReader();
+                videoReader.onload = function(e) {
+                    let videoDataUrl = e.target.result;
 
-                if (imgFileInput.files && imgFileInput.files[0]) {
-                    reader.onload = function(e) {
-                        saveVideoData(category, title, sub, e.target.result, link);
+                    if (imgFileInput.files && imgFileInput.files[0]) {
+                        let imgReader = new FileReader();
+                        imgReader.onload = function(imgEvent) {
+                            saveVideoData(category, title, sub, imgEvent.target.result, videoDataUrl, adLink);
+                        }
+                        imgReader.readAsDataURL(imgFileInput.files[0]);
+                    } else {
+                        saveVideoData(category, title, sub, 'https://via.placeholder.com/300x150', videoDataUrl, adLink);
                     }
-                    reader.readAsDataURL(imgFileInput.files[0]);
-                } else {
-                    saveVideoData(category, title, sub, 'https://via.placeholder.com/300x150', link);
                 }
+                videoReader.readAsDataURL(videoFileInput.files[0]);
             } else {
-                alert('দয়া করে নাম এবং ভিডিও লিংক দিন!');
+                alert('দয়া করে নাম এবং একটি ভিডিও ফাইল সিলেক্ট করুন!');
             }
         }
 
-        function saveVideoData(category, title, sub, imgSrc, link) {
+        function saveVideoData(category, title, sub, imgSrc, videoUrl, adLink) {
             let videos = JSON.parse(localStorage.getItem('movieHubVideos')) || [];
-            let newVid = { category, title, sub, imgSrc, link };
-            videos.unshift(newVid); // নতুন ভিডিও সবার উপরে দেখাবে
+            let newVid = { category, title, sub, imgSrc, videoUrl, adLink };
+            videos.unshift(newVid);
             localStorage.setItem('movieHubVideos', JSON.stringify(videos));
 
             loadVideos();
             closeUploadPanel();
-            alert('সফলভাবে পাবলিশ করা হয়েছে!');
+            alert('সফলভাবে ভিডিও আপলোড ও পাবলিশ করা হয়েছে!');
 
             document.getElementById('newTitle').value = '';
             document.getElementById('newSub').value = '';
-            document.getElementById('newLink').value = '';
+            document.getElementById('newAdLink').value = '';
             document.getElementById('newImgFile').value = '';
+            document.getElementById('newVideoFile').value = '';
         }
 
         function loadVideos() {
@@ -493,14 +506,14 @@
             grid.innerHTML = '';
             let videos = JSON.parse(localStorage.getItem('movieHubVideos')) || [];
 
-            // যদি কোনো ভিডিও না থাকে তবে ডিফল্ট একটি ডেমো ভিডিও দেখাবে
             if(videos.length === 0) {
                 videos = [{
                     category: 'drama',
                     title: 'নাটক ১',
                     sub: 'মজার কমেডি নাটক',
                     imgSrc: 'https://via.placeholder.com/300x150',
-                    link: 'https://www.w3schools.com/html/mov_bbb.mp4'
+                    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+                    adLink: 'https://wwp.giriuhot.com/redirect-zone/47d42437'
                 }];
             }
 
@@ -516,13 +529,12 @@
                     <div class="card-body">
                         <div class="card-title">${vid.title}</div>
                         <div class="card-sub">${vid.sub}</div>
-                        <button class="watch-btn" onclick="startAdTimer('${vid.link}')">ভিডিও দেখুন</button>
+                        <button class="watch-btn" onclick="startAdTimer('${vid.videoUrl}', '${vid.adLink}')">ভিডিও দেখুন</button>
                     </div>
                 `;
                 grid.appendChild(newCard);
             });
 
-            // ব্যানার আপডেট
             if(videos.length > 0) {
                 let bannerBox = document.getElementById('bannerBox');
                 let bannerText = document.getElementById('bannerText');
