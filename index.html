@@ -82,6 +82,22 @@
             font-weight: bold;
             color: #fff;
             margin-bottom: 15px;
+            cursor: pointer;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        .banner::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            z-index: 1;
+        }
+        .banner span {
+            position: relative;
+            z-index: 2;
         }
         .section-title {
             font-size: 16px;
@@ -133,7 +149,7 @@
             cursor: pointer;
         }
         
-        /* টাইমার পপআপ স্টাইল */
+        /* ১৫ সেকেন্ড টাইমার পপআপ */
         #timerModal {
             display: none;
             position: fixed;
@@ -148,7 +164,7 @@
             padding: 20px;
         }
 
-        /* অ্যাডমিন লগইন ও আপলোড প্যানেল মডাল */
+        /* অ্যাডমিন ও আপলোড প্যানেল মডাল */
         #adminModal, #uploadPanelModal {
             display: none;
             position: fixed;
@@ -167,7 +183,7 @@
             max-height: 90vh;
             overflow-y: auto;
         }
-        .admin-box input, .admin-box textarea {
+        .admin-box input, .admin-box select {
             width: 100%;
             padding: 10px;
             margin-bottom: 10px;
@@ -179,7 +195,7 @@
             font-size: 14px;
         }
 
-        /* নেভিগেশন বার */
+        /* নিচের নেভিগেশন বার */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -230,16 +246,16 @@
         <!-- সার্চ বক্স -->
         <input type="text" id="searchInput" class="search-box" placeholder="নাটক বা সিনেমা খুঁজুন..." onkeyup="searchMovies()">
 
-        <!-- ব্যানার -->
-        <div class="banner" id="bannerText">
-            ব্যাচেলর পয়েন্ট সিজন ৫ - নতুন এপিসোড
+        <!-- ব্যানার (ক্লিক করলে অ্যাডমিন সেট করা লিংকে যাবে) -->
+        <div class="banner" id="bannerBox" onclick="clickBanner()">
+            <span id="bannerText">Movie Hub BD - নতুন মুভি ও নাটক দেখুন</span>
         </div>
 
         <div class="section-title" id="secTitle">জনপ্রিয় সিরিজ ও নাটক</div>
 
-        <!-- ভিডিও লিস্ট (এখানে নতুন ভিডিও যোগ হবে) -->
+        <!-- ভিডিও লিস্ট -->
         <div class="grid" id="videoGrid">
-            <div class="card" data-title="নাটক ১ কমেডি">
+            <div class="card" data-category="drama" data-title="নাটক ১ কমেডি">
                 <img src="https://via.placeholder.com/300x150" alt="Thumbnail">
                 <div class="card-body">
                     <div class="card-title">নাটক ১</div>
@@ -250,7 +266,7 @@
         </div>
     </div>
 
-    <!-- ১৫ সেকেন্ড টাইমার এবং অ্যাড পপআপ স্ক্রিন -->
+    <!-- ১৫ সেকেন্ড টাইমার পপআপ -->
     <div id="timerModal">
         <h2 style="color: var(--accent-color); margin-bottom: 10px;">বিজ্ঞাপন ও প্রিপারেশন চলছে...</h2>
         <p style="font-size: 14px; color: #ccc; margin-bottom: 20px;">দয়া করে একটু অপেক্ষা করুন, ভিডিও প্রস্তুত হচ্ছে:</p>
@@ -258,7 +274,7 @@
         <p style="font-size: 12px; color: #888; margin-top: 20px;">স্বয়ংক্রিয়ভাবে ভিডিও পেজে নিয়ে যাওয়া হচ্ছে...</p>
     </div>
 
-    <!-- গোপন অ্যাডমিন পাসওয়ার্ড পপআপ -->
+    <!-- অ্যাডমিন পাসওয়ার্ড পপআপ -->
     <div id="adminModal">
         <div class="admin-box">
             <h3 style="margin-top:0; color:var(--accent-color);">অ্যাডমিন লগইন</h3>
@@ -269,49 +285,62 @@
         </div>
     </div>
 
-    <!-- আসল ভিডিও আপলোড বা প্যানেল ফর্ম -->
+    <!-- আসল ভিডিও আপলোড প্যানেল -->
     <div id="uploadPanelModal">
         <div class="admin-box">
-            <h3 style="margin-top:0; color:var(--accent-color);">নতুন ভিডিও আপলোড প্যানেল</h3>
-            <p style="font-size:11px; color:#aaa; margin-bottom:10px;">এখানে তথ্য দিয়ে পাবলিশ করলেই অ্যাপে নতুন ভিডিও চলে আসবে:</p>
+            <h3 style="margin-top:0; color:var(--accent-color);">নতুন ভিডিও বা ব্যানার সেটআপ প্যানেল</h3>
             
-            <label style="font-size:12px;">নাটক বা সিনেমার নাম:</label>
+            <label style="font-size:12px;">ক্যাটাগরি সিলেক্ট করুন:</label>
+            <select id="newCategory">
+                <option value="drama">সিরিজ ও নাটক</option>
+                <option value="tv">টিভি শো</option>
+            </select>
+
+            <label style="font-size:12px;">নাটক/মুভির নাম:</label>
             <input type="text" id="newTitle" placeholder="যেমন: নতুন নাটক পর্ব ১">
 
-            <label style="font-size:12px;">ছোট বিবরণ (Sub-title):</label>
-            <input type="text" id="newSub" placeholder="যেমন: মজার নাটক - ফুল এইচডি">
+            <label style="font-size:12px;">বিবরণ:</label>
+            <input type="text" id="newSub" placeholder="যেমন: ফুল এইচডি ভিডিও">
 
-            <label style="font-size:12px;">থাম্বনেইল ছবির লিংক (Image URL):</label>
-            <input type="text" id="newImg" placeholder="ছবির ডাইরেক্ট লিংক দিন">
+            <label style="font-size:12px;">থাম্বনেইল ছবির লিংক:</label>
+            <input type="text" id="newImg" placeholder="ছবির লিংক দিন">
 
             <label style="font-size:12px;">ভিডিও বা টেলিগ্রাম লিংক:</label>
-            <input type="text" id="newLink" placeholder="https://t.me/your_channel">
+            <input type="text" id="newLink" placeholder="https://t.me/...">
 
-            <button onclick="addNewVideo()" style="width:100%; margin-bottom:5px; background:#4CAF50;">পাবলিশ করুন</button>
+            <hr style="border-color:#444; margin: 15px 0;">
+
+            <label style="font-size:12px; color:#ffeb3b;">ব্যানার আপডেট করতে চাইলে (ঐচ্ছিক):</label>
+            <input type="text" id="bannerTitleInput" placeholder="ব্যানারের নতুন লেখা">
+            <input type="text" id="bannerLinkInput" placeholder="ব্যানারে ক্লিক করলে যে অ্যাড লিংক খুলবে">
+
+            <button onclick="addNewVideo()" style="width:100%; margin-bottom:5px; background:#4CAF50;">পাবলিশ বা আপডেট করুন</button>
             <button onclick="closeUploadPanel()" style="width:100%; background:#555;">প্যানেল বন্ধ করুন</button>
         </div>
     </div>
 
-    <!-- নেভিগেশন বার -->
+    <!-- সচল নিচের নেভিগেশন বার -->
     <div class="bottom-nav">
-        <div class="nav-item active">
+        <div class="nav-item active" onclick="filterTab('home', this)">
             <span>🏠</span>হোম
         </div>
-        <div class="nav-item">
+        <div class="nav-item" onclick="filterTab('drama', this)">
             <span>🎬</span>সিরিজ
         </div>
-        <div class="nav-item">
+        <div class="nav-item" onclick="filterTab('tv', this)">
             <span>📺</span>টিভি
         </div>
-        <div class="nav-item">
-            <span>❤️</span>ফেভারিট
+        <div class="nav-item" onclick="filterTab('favorite', this)">
+            <span>❤️️</span>ফেভারিট
         </div>
-        <div class="nav-item">
+        <div class="nav-item" onclick="filterTab('profile', this)">
             <span>👤</span>প্রফাইল
         </div>
     </div>
 
     <script>
+        let currentBannerLink = 'https://omg10.com/4/11896491';
+
         // অ্যাপে ঢুকলেই প্রথম অ্যাড অটো ওপেন হবে
         window.onload = function() {
             setTimeout(function() {
@@ -319,7 +348,11 @@
             }, 2000);
         };
 
-        // বাটনে ক্লিক করলে ১৫ সেকেন্ডের টাইমার ও দ্বিতীয় অ্যাড চালু হবে
+        function clickBanner() {
+            window.open(currentBannerLink, '_blank');
+        }
+
+        // ১৫ সেকেন্ড টাইমার এবং দ্বিতীয় অ্যাড
         function startAdTimer(videoUrl) {
             const modal = document.getElementById('timerModal');
             const countDisplay = document.getElementById('countdownNumber');
@@ -353,10 +386,9 @@
             let pass = document.getElementById('adminPass').value;
             if(pass === '1234') {
                 closeAdmin();
-                // পাসওয়ার্ড সঠিক হলে সরাসরি আপলোড প্যানেল ওপেন হবে
                 document.getElementById('uploadPanelModal').style.display = 'flex';
             } else {
-                alert('ভুল পাসওয়ার্ড! আবার চেষ্টা করুন।');
+                alert('ভুল পাসওয়ার্ড! সঠিক পাসওয়ার্ড দিন (1234)।');
             }
         }
 
@@ -364,43 +396,92 @@
             document.getElementById('uploadPanelModal').style.display = 'none';
         }
 
-        // নতুন ভিডিও অ্যাপে যোগ করার ফাংশন
+        // ভিডিও আপলোড ও ব্যানার আপডেট করার ফাংশন
         function addNewVideo() {
+            let category = document.getElementById('newCategory').value;
             let title = document.getElementById('newTitle').value;
             let sub = document.getElementById('newSub').value;
             let img = document.getElementById('newImg').value;
             let link = document.getElementById('newLink').value;
+            
+            let bTitle = document.getElementById('bannerTitleInput').value;
+            let bLink = document.getElementById('bannerLinkInput').value;
 
-            if(!title || !link) {
-                alert('দয়া করে অন্তত নাম এবং ভিডিও লিংক দিন!');
-                return;
+            // ব্যানার আপডেট করতে চাইলে
+            if(bTitle) {
+                document.getElementById('bannerText').innerText = bTitle;
+            }
+            if(bLink) {
+                currentBannerLink = bLink;
             }
 
-            let grid = document.getElementById('videoGrid');
-            let newCard = document.createElement('div');
-            newCard.className = 'card';
-            newCard.setAttribute('data-title', title.toLowerCase());
-            
-            let imgSrc = img ? img : 'https://via.placeholder.com/300x150';
+            // যদি ভিডিওর তথ্য দেওয়া হয় তবে লিস্টে যোগ হবে
+            if(title && link) {
+                let grid = document.getElementById('videoGrid');
+                let newCard = document.createElement('div');
+                newCard.className = 'card';
+                newCard.setAttribute('data-category', category);
+                newCard.setAttribute('data-title', title.toLowerCase());
+                
+                let imgSrc = img ? img : 'https://via.placeholder.com/300x150';
 
-            newCard.innerHTML = `
-                <img src="${imgSrc}" alt="Thumbnail">
-                <div class="card-body">
-                    <div class="card-title">${title}</div>
-                    <div class="card-sub">${sub}</div>
-                    <button class="watch-btn" onclick="startAdTimer('${link}')">দেখুন / ডাউনলোড</button>
-                </div>
-            `;
+                newCard.innerHTML = `
+                    <img src="${imgSrc}" alt="Thumbnail">
+                    <div class="card-body">
+                        <div class="card-title">${title}</div>
+                        <div class="card-sub">${sub}</div>
+                        <button class="watch-btn" onclick="startAdTimer('${link}')">দেখুন / ডাউনলোড</button>
+                    </div>
+                `;
+                grid.prepend(newCard);
+            }
 
-            grid.prepend(newCard); // নতুন ভিডিও সবার উপরে শো করবে
             closeUploadPanel();
-            alert('সফলভাবে নতুন ভিডিও পাবলিশ করা হয়েছে!');
+            alert('সফলভাবে আপডেট করা হয়েছে!');
             
-            // ইনপুট বক্সগুলো খালি করে দেওয়া
             document.getElementById('newTitle').value = '';
             document.getElementById('newSub').value = '';
             document.getElementById('newImg').value = '';
             document.getElementById('newLink').value = '';
+            document.getElementById('bannerTitleInput').value = '';
+            document.getElementById('bannerLinkInput').value = '';
+        }
+
+        // নিচের মেনু বাটনগুলোর কাজ (ফিল্টারিং ও প্রোফাইল শো করা)
+        function filterTab(type, element) {
+            let items = document.querySelectorAll('.nav-item');
+            items.forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+
+            let cards = document.getElementsByClassName('card');
+            let secTitle = document.getElementById('secTitle');
+
+            if(type === 'home') {
+                secTitle.innerText = "জনপ্রিয় সিরিজ ও নাটক";
+                for(let card of cards) { card.style.display = ""; }
+            } else if(type === 'drama') {
+                secTitle.innerText = "সিরিজ ও নাটক তালিকা";
+                for(let card of cards) {
+                    if(card.getAttribute('data-category') === 'drama') {
+                        card.style.display = "";
+                    } else {
+                        card.style.display = "none";
+                    }
+                }
+            } else if(type === 'tv') {
+                secTitle.innerText = "টিভি শো ও লাইভ";
+                for(let card of cards) {
+                    if(card.getAttribute('data-category') === 'tv') {
+                        card.style.display = "";
+                    } else {
+                        card.style.display = "none";
+                    }
+                }
+            } else if(type === 'favorite') {
+                alert('আপনার ফেভারিট লিস্ট খালি!');
+            } else if(type === 'profile') {
+                alert('Movie Hub BD | অ্যাপের মালিক: রাকিব (অ্যাডমিন মোড সক্রিয় করতে উপরের ⚙️ আইকনে চাপুন)');
+            }
         }
 
         function toggleTheme() {
@@ -418,12 +499,12 @@
                 document.getElementById('appTitle').innerText = 'Movie Hub BD';
                 document.getElementById('secTitle').innerText = 'Popular Series & Dramas';
                 document.getElementById('searchInput').placeholder = 'Search movies or dramas...';
-                document.getElementById('bannerText').innerText = 'Bachelor Point Season 5 - New Episode';
+                document.getElementById('bannerText').innerText = 'Movie Hub BD - Watch New Movies & Dramas';
             } else {
                 document.getElementById('appTitle').innerText = 'Movie Hub BD';
                 document.getElementById('secTitle').innerText = 'জনপ্রিয় সিরিজ ও নাটক';
                 document.getElementById('searchInput').placeholder = 'নাটক বা সিনেমা খুঁজুন...';
-                document.getElementById('bannerText').innerText = 'ব্যাচেলর পয়েন্ট সিজন ৫ - নতুন এপিসোড';
+                document.getElementById('bannerText').innerText = 'Movie Hub BD - নতুন মুভি ও নাটক দেখুন';
             }
         }
 
