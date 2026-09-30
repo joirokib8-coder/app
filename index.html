@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -115,6 +117,7 @@
             overflow: hidden;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             margin-bottom: 10px;
+            position: relative;
         }
         .card img {
             width: 100%;
@@ -148,7 +151,24 @@
             box-sizing: border-box;
             cursor: pointer;
         }
-        
+        .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            font-size: 12px;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         #timerModal {
             display: none;
             position: fixed;
@@ -293,14 +313,7 @@
         <div class="section-title" id="secTitle">জনপ্রিয় সিরিজ ও নাটক</div>
 
         <div class="grid" id="videoGrid">
-            <div class="card" data-category="drama" data-title="নাটক ১ কমেডি">
-                <img src="https://via.placeholder.com/300x150" alt="Thumbnail">
-                <div class="card-body">
-                    <div class="card-title">নাটক ১</div>
-                    <div class="card-sub">মজার কমেডি নাটক</div>
-                    <button class="watch-btn" onclick="startAdTimer('https://www.w3schools.com/html/mov_bbb.mp4')">ভিডিও দেখুন</button>
-                </div>
-            </div>
+            <!-- ভিডিও কার্ডগুলো এখানে স্বয়ংক্রিয়ভাবে লোড হবে -->
         </div>
     </div>
 
@@ -333,7 +346,7 @@
     <div id="uploadPanelModal">
         <div class="admin-box">
             <h3 style="margin-top:0; color:var(--accent-color);">ভিডিও আপলোড প্যানেল</h3>
-            
+
             <label>ক্যাটাগরি:</label>
             <select id="newCategory">
                 <option value="drama">সিরিজ ও নাটক</option>
@@ -369,6 +382,11 @@
     <script>
         let currentBannerLink = 'https://omg10.com/4/11896491';
 
+        // পেজ লোড হওয়ার সাথে সাথে সেভ করা ভিডিওগুলো ডিসপ্লেতে নিয়ে আসা
+        window.onload = function() {
+            loadVideos();
+        };
+
         function clickBanner() {
             window.open(currentBannerLink, '_blank');
         }
@@ -377,7 +395,7 @@
             const modal = document.getElementById('timerModal');
             const countDisplay = document.getElementById('countdownNumber');
             modal.style.display = 'flex';
-            
+
             window.open('https://wwp.giriuhot.com/redirect-zone/47d42437', '_blank');
 
             let timeLeft = 15;
@@ -397,7 +415,7 @@
         function openInAppPlayer(url) {
             const playerModal = document.getElementById('videoPlayerModal');
             const wrapper = document.getElementById('playerWrapper');
-            
+
             wrapper.innerHTML = `<video controls autoplay style="width:100%; height:300px;"><source src="${url}" type="video/mp4">আপনার ব্রাউজার ভিডিও সাপোর্ট করছে না।</video>`;
             playerModal.style.display = 'flex';
         }
@@ -440,52 +458,86 @@
 
             if(title && link) {
                 let reader = new FileReader();
-                
+
                 if (imgFileInput.files && imgFileInput.files[0]) {
                     reader.onload = function(e) {
-                        createCardAndBanner(category, title, sub, e.target.result, link);
+                        saveVideoData(category, title, sub, e.target.result, link);
                     }
                     reader.readAsDataURL(imgFileInput.files[0]);
                 } else {
-                    // ছবি না দিলে ডিফল্ট ছবি সেট হবে
-                    createCardAndBanner(category, title, sub, 'https://via.placeholder.com/300x150', link);
+                    saveVideoData(category, title, sub, 'https://via.placeholder.com/300x150', link);
                 }
             } else {
                 alert('দয়া করে নাম এবং ভিডিও লিংক দিন!');
             }
         }
 
-        function createCardAndBanner(category, title, sub, imgSrc, link) {
-            let grid = document.getElementById('videoGrid');
-            let newCard = document.createElement('div');
-            newCard.className = 'card';
-            newCard.setAttribute('data-category', category);
-            newCard.setAttribute('data-title', title.toLowerCase());
-            
-            newCard.innerHTML = `
-                <img src="${imgSrc}" alt="Thumbnail">
-                <div class="card-body">
-                    <div class="card-title">${title}</div>
-                    <div class="card-sub">${sub}</div>
-                    <button class="watch-btn" onclick="startAdTimer('${link}')">ভিডিও দেখুন</button>
-                </div>
-            `;
-            grid.prepend(newCard);
+        function saveVideoData(category, title, sub, imgSrc, link) {
+            let videos = JSON.parse(localStorage.getItem('movieHubVideos')) || [];
+            let newVid = { category, title, sub, imgSrc, link };
+            videos.unshift(newVid); // নতুন ভিডিও সবার উপরে দেখাবে
+            localStorage.setItem('movieHubVideos', JSON.stringify(videos));
 
-            // অটো ব্যানার আপডেট (সর্বশেষ আপলোড করা ভিডিওর ছবি ও নাম ব্যানারে চলে যাবে)
-            let bannerBox = document.getElementById('bannerBox');
-            let bannerText = document.getElementById('bannerText');
-            bannerBox.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('${imgSrc}')`;
-            bannerText.innerText = title + " - এখন অ্যাপে উপলব্ধ!";
-
+            loadVideos();
             closeUploadPanel();
             alert('সফলভাবে পাবলিশ করা হয়েছে!');
 
-            // ফরম ক্লিয়ার করা
             document.getElementById('newTitle').value = '';
             document.getElementById('newSub').value = '';
             document.getElementById('newLink').value = '';
             document.getElementById('newImgFile').value = '';
+        }
+
+        function loadVideos() {
+            let grid = document.getElementById('videoGrid');
+            grid.innerHTML = '';
+            let videos = JSON.parse(localStorage.getItem('movieHubVideos')) || [];
+
+            // যদি কোনো ভিডিও না থাকে তবে ডিফল্ট একটি ডেমো ভিডিও দেখাবে
+            if(videos.length === 0) {
+                videos = [{
+                    category: 'drama',
+                    title: 'নাটক ১',
+                    sub: 'মজার কমেডি নাটক',
+                    imgSrc: 'https://via.placeholder.com/300x150',
+                    link: 'https://www.w3schools.com/html/mov_bbb.mp4'
+                }];
+            }
+
+            videos.forEach((vid, index) => {
+                let newCard = document.createElement('div');
+                newCard.className = 'card';
+                newCard.setAttribute('data-category', vid.category);
+                newCard.setAttribute('data-title', vid.title.toLowerCase());
+
+                newCard.innerHTML = `
+                    <button class="delete-btn" onclick="deleteVideo(${index})" title="ডিলিট করুন">X</button>
+                    <img src="${vid.imgSrc}" alt="Thumbnail">
+                    <div class="card-body">
+                        <div class="card-title">${vid.title}</div>
+                        <div class="card-sub">${vid.sub}</div>
+                        <button class="watch-btn" onclick="startAdTimer('${vid.link}')">ভিডিও দেখুন</button>
+                    </div>
+                `;
+                grid.appendChild(newCard);
+            });
+
+            // ব্যানার আপডেট
+            if(videos.length > 0) {
+                let bannerBox = document.getElementById('bannerBox');
+                let bannerText = document.getElementById('bannerText');
+                bannerBox.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('${videos[0].imgSrc}')`;
+                bannerText.innerText = videos[0].title + " - এখন অ্যাপে উপলব্ধ!";
+            }
+        }
+
+        function deleteVideo(index) {
+            if(confirm('আপনি কি এই ভিডিওটি ডিলিট করতে চান?')) {
+                let videos = JSON.parse(localStorage.getItem('movieHubVideos')) || [];
+                videos.splice(index, 1);
+                localStorage.setItem('movieHubVideos', JSON.stringify(videos));
+                loadVideos();
+            }
         }
 
         function filterTab(type, element) {
