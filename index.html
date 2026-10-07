@@ -3,234 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Video Hub</title>
-    
-    <!-- আপনার Monetag SDK স্ক্রিপ্ট ট্যাগটি এখানে বসাবেন -->
-    <!-- উদাহরণ: <script src="//libtl.com/sdk.js" data-zone="11978077" async></script> -->
-
+    <title>Movie Hub BD</title>
+    <!-- আপনার মনিট্যাগ বা অ্যাড স্ক্রিপ্ট এখানে যুক্ত করতে পারেন -->
     <style>
-        :root {
-            --bg-color: #f8f9fa;
-            --text-color: #333333;
-            --card-bg: #ffffff;
-            --border-color: #dee2e6;
-        }
         body {
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            padding-bottom: 40px;
+            background: #121212;
+            color: #ffffff;
+            padding: 10px;
         }
-        header {
-            background: #ffffff;
-            padding: 15px 20px;
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .logo {
-            font-size: 18px;
-            font-weight: bold;
-            color: #28a745;
-        }
-        .container {
-            padding: 15px;
-            max-width: 800px;
-            margin: 0 auto;
+            background: #1e1e1e;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
         }
         .search-box {
             width: 100%;
-            padding: 10px 15px;
-            margin-bottom: 15px;
+            padding: 10px;
+            background: #1e1e1e;
+            border: 1px solid #444;
+            color: #fff;
             border-radius: 6px;
-            border: 1px solid var(--border-color);
-            background: #fff;
-            font-size: 14px;
+            margin-bottom: 15px;
             box-sizing: border-box;
         }
-        .section-title {
-            font-size: 15px;
-            margin-bottom: 12px;
-            font-weight: bold;
-            color: #495057;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-        .card {
-            background: var(--card-bg);
+        .video-card {
+            background: #1e1e1e;
             border-radius: 8px;
             overflow: hidden;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             cursor: pointer;
-            transition: transform 0.2s;
         }
-        .card:hover {
-            transform: translateY(-2px);
-        }
-        .card img {
+        .video-card img {
             width: 100%;
-            height: 110px;
+            height: 160px;
             object-fit: cover;
         }
-        .card-body {
+        .video-title {
             padding: 10px;
-        }
-        .card-title {
-            font-size: 13px;
-            font-weight: bold;
-            color: #212529;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        #videoPlayerModal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 4000;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-        .player-container {
-            width: 100%;
-            max-width: 700px;
-            background: #000;
-            border-radius: 8px;
-            overflow: hidden;
-            aspect-ratio: 16/9;
-        }
-        .player-container iframe, .player-container video {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-        }
-        .close-player {
-            background: #dc3545;
-            color: #fff;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 15px;
             font-size: 14px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo">💡 Online Video Hub</div>
-        <div style="font-size: 12px; color: #28a745; font-weight: bold;">● লাইভ</div>
-    </header>
-
-    <div class="container">
-        <input type="text" id="searchInput" class="search-box" placeholder="ভিডিও খুঁজুন..." onkeyup="searchVideos()">
-
-        <div class="section-title">জনপ্রিয় ভিডিও তালিকা</div>
-
-        <div class="grid" id="videoGrid"></div>
+    <div class="header">
+        <span>💡 Online Video Hub</span>
+        <span style="color: #28a745;">• লাইভ</span>
     </div>
 
-    <!-- ভিডিও প্লেয়ার মোডাল -->
-    <div id="videoPlayerModal">
-        <div class="player-container" id="playerWrapper"></div>
-        <button class="close-player" onclick="closeVideoPlayer()">বন্ধ করুন</button>
-    </div>
+    <input type="text" class="search-box" id="searchInput" placeholder="ভিডিও খুঁজুন..." onkeyup="searchVideos()">
+
+    <h3>জনপ্রিয় ভিডিও তালিকা</h3>
+    <div id="videoContainer"></div>
 
     <script>
-        window.onload = function() {
-            loadVideos();
-        };
+        const STORAGE_KEY = 'movieHub_videos_data';
 
-        function loadVideos() {
-            let grid = document.getElementById('videoGrid');
-            grid.innerHTML = '';
-            let videos = JSON.parse(localStorage.getItem('safeMovieHub_data')) || [];
+        function loadWebsiteVideos() {
+            let container = document.getElementById('videoContainer');
+            container.innerHTML = '';
+            let videos = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 
             if(videos.length === 0) {
-                grid.innerHTML = '<p style="color:#6c757d; font-size:13px; text-align:center; grid-column: span 2;">বর্তমানে কোনো ভিডিও নেই।</p>';
+                container.innerHTML = '<p style="color:#888; text-align:center; margin-top:30px;">বর্তমানে কোনো ভিডিও নেই।</p>';
                 return;
             }
 
             videos.forEach((vid) => {
-                let newCard = document.createElement('div');
-                newCard.className = 'card';
-                newCard.setAttribute('data-title', vid.title.toLowerCase());
-
-                newCard.innerHTML = `
-                    <div onclick="handleVideoClick('${vid.videoUrl}')">
-                        <img src="${vid.imgSrc}" alt="Thumbnail">
-                        <div class="card-body">
-                            <div class="card-title">${vid.title}</div>
-                        </div>
-                    </div>
+                let card = document.createElement('div');
+                card.className = 'video-card';
+                card.onclick = function() {
+                    playVideoWithAd(vid.videoUrl);
+                };
+                card.innerHTML = `
+                    <img src="${vid.imgSrc}" alt="Thumbnail">
+                    <div class="video-title">${vid.title}</div>
                 `;
-                grid.appendChild(newCard);
+                container.appendChild(card);
             });
         }
 
-        // Monetag Rewarded Ad ইন্টিগ্রেশন
-        function handleVideoClick(videoUrl) {
+        function playVideoWithAd(url) {
+            // মনিট্যাগ বা যেকোনো অ্যাড ফাংশন এখানে কল হবে
             if (typeof show_11978077 === 'function') {
                 show_11978077().then(() => {
-                    openVideoPlayer(videoUrl);
-                }).catch((e) => {
-                    openVideoPlayer(videoUrl);
+                    window.location.href = url;
+                }).catch(() => {
+                    window.location.href = url;
                 });
             } else {
-                openVideoPlayer(videoUrl);
+                // যদি অ্যাড ফাংশন লোড না হয়ে থাকে সরাসরি ভিডিও লিংকে নিয়ে যাবে
+                window.location.href = url;
             }
-        }
-
-        function openVideoPlayer(url) {
-            const playerModal = document.getElementById('videoPlayerModal');
-            const wrapper = document.getElementById('playerWrapper');
-            let embedHtml = '';
-            
-            if (url.includes('youtube.com') || url.includes('youtu.be')) {
-                let videoId = '';
-                if (url.includes('youtu.be/')) {
-                    videoId = url.split('youtu.be/')[1].split('?')[0];
-                } else if (url.includes('watch?v=')) {
-                    videoId = url.split('watch?v=')[1].split('&')[0];
-                }
-                embedHtml = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-            } else {
-                embedHtml = `<video controls autoplay playsinline><source src="${url}" type="video/mp4"></video>`;
-            }
-            
-            wrapper.innerHTML = embedHtml;
-            playerModal.style.display = 'flex';
-        }
-
-        function closeVideoPlayer() {
-            const playerModal = document.getElementById('videoPlayerModal');
-            const wrapper = document.getElementById('playerWrapper');
-            wrapper.innerHTML = '';
-            playerModal.style.display = 'none';
         }
 
         function searchVideos() {
             let input = document.getElementById('searchInput').value.toLowerCase();
-            let cards = document.getElementsByClassName('card');
+            let cards = document.getElementsByClassName('video-card');
+            
             for (let i = 0; i < cards.length; i++) {
-                let title = cards[i].getAttribute('data-title').toLowerCase();
-                cards[i].style.display = title.includes(input) ? "" : "none";
+                let title = cards[i].getElementsByClassName('video-title')[0].innerText.toLowerCase();
+                if (title.includes(input)) {
+                    cards[i].style.display = "";
+                } else {
+                    cards[i].style.display = "none";
+                }
             }
         }
+
+        // পেজ লোড হওয়ার সাথে সাথে ভিডিওগুলো দেখাবে
+        window.onload = loadWebsiteVideos;
     </script>
 </body>
 </html>
