@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movie Hub BD</title>
-    <!-- আপনার মনিট্যাগ বা অ্যাড স্ক্রিপ্ট এখানে যুক্ত করতে পারেন -->
+    <title>Movie Hub BD - Website</title>
     <style>
         body {
             margin: 0;
@@ -55,17 +54,29 @@
 <body>
 
     <div class="header">
-        <span>💡 Online Video Hub</span>
-        <span style="color: #28a745;">• লাইভ</span>
+        <span>💡 Movie Hub BD</span>
+        <span style="color: #28a745; font-size: 12px;">• লাইভ</span>
     </div>
 
+    <!-- সার্চ বক্স -->
     <input type="text" class="search-box" id="searchInput" placeholder="ভিডিও খুঁজুন..." onkeyup="searchVideos()">
 
     <h3>জনপ্রিয় ভিডিও তালিকা</h3>
     <div id="videoContainer"></div>
 
     <script>
-        const STORAGE_KEY = 'movieHub_videos_data';
+        // একই লোকাল স্টোরেজ কি (Key) ব্যবহার করা হয়েছে যাতে অ্যাডমিনের ডাটা এখানে সাথে সাথে পায়
+        const STORAGE_KEY = 'movieHub_exact_sync_data';
+
+        window.onload = function() {
+            loadWebsiteVideos();
+            // অটো রিফ্রেশ বা সিঙ্ক চেক (যদি একই ব্রাউজারে দুটি ট্যাব খোলা থাকে)
+            window.addEventListener('storage', function(e) {
+                if (e.key === STORAGE_KEY) {
+                    loadWebsiteVideos();
+                }
+            });
+        };
 
         function loadWebsiteVideos() {
             let container = document.getElementById('videoContainer');
@@ -92,7 +103,6 @@
         }
 
         function playVideoWithAd(url) {
-            // মনিট্যাগ বা যেকোনো অ্যাড ফাংশন এখানে কল হবে
             if (typeof show_11978077 === 'function') {
                 show_11978077().then(() => {
                     window.location.href = url;
@@ -100,7 +110,6 @@
                     window.location.href = url;
                 });
             } else {
-                // যদি অ্যাড ফাংশন লোড না হয়ে থাকে সরাসরি ভিডিও লিংকে নিয়ে যাবে
                 window.location.href = url;
             }
         }
@@ -118,9 +127,6 @@
                 }
             }
         }
-
-        // পেজ লোড হওয়ার সাথে সাথে ভিডিওগুলো দেখাবে
-        window.onload = loadWebsiteVideos;
     </script>
 </body>
 </html>
