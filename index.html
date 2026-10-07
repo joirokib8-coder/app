@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movie Hub BD</title>
+    <title>Movie Hub BD - Admin & Website</title>
     <style>
         :root {
             --bg-color: #0f1015;
@@ -25,7 +25,7 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             transition: background 0.3s, color 0.3s;
-            padding-bottom: 30px;
+            padding-bottom: 50px;
         }
         header {
             display: flex;
@@ -45,7 +45,7 @@
             gap: 10px;
             align-items: center;
         }
-        button {
+        button, .admin-btn {
             background: var(--accent-color);
             color: #fff;
             border: none;
@@ -54,6 +54,9 @@
             cursor: pointer;
             font-size: 14px;
             font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
         }
         .container {
             padding: 15px;
@@ -110,6 +113,40 @@
             text-overflow: ellipsis;
         }
 
+        /* অ্যাডমিন প্যানেল টগল সেকশন */
+        .admin-toggle-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .admin-toggle-box input, .admin-toggle-box select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: var(--card-bg);
+            border: 1px solid #444;
+            color: var(--text-color);
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        .video-list-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            margin-top: 8px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+        .delete-btn {
+            background: #ff3366;
+            padding: 4px 8px;
+            font-size: 11px;
+        }
+
         /* ভিডিও প্লেয়ার মডাল */
         #videoPlayerModal {
             display: none;
@@ -156,11 +193,51 @@
     <header>
         <div class="logo">Movie Hub BD</div>
         <div class="header-controls">
+            <button onclick="toggleAdminPanel()">⚙️ অ্যাডমিন</button>
             <button onclick="toggleTheme()">🌓 থিম</button>
         </div>
     </header>
 
     <div class="container">
+        <!-- অ্যাডমিন প্যানেল (লগইন ও আপলোড) -->
+        <div id="adminPanelContainer" class="admin-toggle-box" style="display:none;">
+            <div id="loginBox">
+                <h3 style="margin-top:0; color:#e91e63;">🔐 অ্যাডমিন লগইন</h3>
+                <input type="password" id="adminPass" placeholder="পাসওয়ার্ড দিন (1234)">
+                <button onclick="checkLogin()">প্রবেশ করুন</button>
+            </div>
+
+            <div id="uploadBox" style="display:none;">
+                <h3 style="margin-top:0; color:#e91e63;">⚡ ভিডিও আপলোড প্যানেল</h3>
+                
+                <label style="font-size:12px; font-weight:bold;">নাটক বা মুভির নাম:</label>
+                <input type="text" id="newTitle" placeholder="যেমন: নতুন নাটক পর্ব ১">
+
+                <label style="font-size:12px; font-weight:bold;">থাম্বনেইল ছবি আপলোড:</label>
+                <input type="file" id="newImgFile" accept="image/*">
+
+                <label style="font-size:12px; font-weight:bold;">ইউটিউব বা ভিডিও লিংক:</label>
+                <input type="text" id="newVideoUrl" placeholder="এখানে ভিডিওর লিংক দিন">
+
+                <label style="font-size:12px; font-weight:bold;">অ্যাড সংখ্যা:</label>
+                <select id="newAdCount">
+                    <option value="0">কোনো অ্যাড নেই (0)</option>
+                    <option value="1">১টি অ্যাড</option>
+                    <option value="2">২টি অ্যাড</option>
+                    <option value="3">৩টি অ্যাড</option>
+                </select>
+
+                <label style="font-size:12px; font-weight:bold;">বিজ্ঞাপনের লিংক (Ad Link):</label>
+                <input type="text" id="newAdLink" placeholder="অ্যাড লিংক এখানে দিন">
+
+                <button onclick="addNewVideo()" style="background: #28a745; width:100%; margin-bottom:10px;">সফলভাবে পাবলিশ করুন</button>
+                <button onclick="logoutAdmin()" style="background: #444; width:100%;">লগআউট</button>
+
+                <h4 style="margin:15px 0 5px 0; font-size:14px;">আপলোড করা ভিডিও তালিকা:</h4>
+                <div id="adminVideoList"></div>
+            </div>
+        </div>
+
         <!-- সার্চ বক্স -->
         <input type="text" id="searchInput" class="search-box" placeholder="নাটক বা সিনেমা খুঁজুন..." onkeyup="searchMovies()">
 
@@ -181,13 +258,111 @@
             loadVideos();
         };
 
+        function toggleAdminPanel() {
+            let panel = document.getElementById('adminPanelContainer');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function checkLogin() {
+            let pass = document.getElementById('adminPass').value;
+            if(pass === '1234') {
+                document.getElementById('loginBox').style.display = 'none';
+                document.getElementById('uploadBox').style.display = 'block';
+                loadAdminVideos();
+            } else {
+                alert('ভুল পাসওয়ার্ড! (সঠিক পাসওয়ার্ড: 1234)');
+            }
+        }
+
+        function logoutAdmin() {
+            document.getElementById('uploadBox').style.display = 'none';
+            document.getElementById('loginBox').style.display = 'block';
+            document.getElementById('adminPass').value = '';
+        }
+
+        function addNewVideo() {
+            let title = document.getElementById('newTitle').value.trim();
+            let videoUrl = document.getElementById('newVideoUrl').value.trim();
+            let adCount = parseInt(document.getElementById('newAdCount').value) || 0;
+            let adLink = document.getElementById('newAdLink').value.trim();
+            let imgFileInput = document.getElementById('newImgFile');
+
+            if(!title || !videoUrl) {
+                alert('দয়া করে নাটকের নাম এবং ভিডিওর লিংক দিন!');
+                return;
+            }
+
+            if (imgFileInput.files && imgFileInput.files[0]) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    saveVideoData(title, e.target.result, videoUrl, adCount, adLink);
+                };
+                reader.readAsDataURL(imgFileInput.files[0]);
+            } else {
+                saveVideoData(title, 'https://via.placeholder.com/300x150', videoUrl, adCount, adLink);
+            }
+        }
+
+        function saveVideoData(title, imgSrc, videoUrl, adCount, adLink) {
+            let videos = JSON.parse(localStorage.getItem('movieHubVideos_pro')) || [];
+            let newVid = { title, imgSrc, videoUrl, adCount, adLink };
+            videos.unshift(newVid);
+
+            try {
+                localStorage.setItem('movieHubVideos_pro', JSON.stringify(videos));
+                alert('ভিডিও সফলভাবে পাবলিশ করা হয়েছে!');
+
+                document.getElementById('newTitle').value = '';
+                document.getElementById('newImgFile').value = '';
+                document.getElementById('newVideoUrl').value = '';
+                document.getElementById('newAdLink').value = '';
+                document.getElementById('newAdCount').value = '0';
+
+                loadAdminVideos();
+                loadVideos(); // সাথে সাথে ওয়েবসাইটে আপডেট দেখাবে
+            } catch (e) {
+                alert('স্টোরেজ ফুল হয়ে গেছে বা ছবি অনেক বড়!');
+            }
+        }
+
+        function loadAdminVideos() {
+            let listDiv = document.getElementById('adminVideoList');
+            listDiv.innerHTML = '';
+            let videos = JSON.parse(localStorage.getItem('movieHubVideos_pro')) || [];
+
+            if(videos.length === 0) {
+                listDiv.innerHTML = '<p style="color:#aaa; font-size:12px;">কোনো ভিডিও নেই।</p>';
+                return;
+            }
+
+            videos.forEach((vid, index) => {
+                let item = document.createElement('div');
+                item.className = 'video-list-item';
+                item.innerHTML = `
+                    <span><b>${vid.title}</b></span>
+                    <button class="delete-btn" onclick="deleteVideo(${index})">ডিলিট</button>
+                `;
+                listDiv.appendChild(item);
+            });
+        }
+
+        function deleteVideo(index) {
+            if(confirm('আপনি কি এই ভিডিওটি ডিলিট করতে চান?')) {
+                let videos = JSON.parse(localStorage.getItem('movieHubVideos_pro')) || [];
+                videos.splice(index, 1);
+                localStorage.setItem('movieHubVideos_pro', JSON.stringify(videos));
+                loadAdminVideos();
+                loadVideos();
+            }
+        }
+
         function loadVideos() {
             let grid = document.getElementById('videoGrid');
             grid.innerHTML = '';
             let videos = JSON.parse(localStorage.getItem('movieHubVideos_pro')) || [];
 
             if(videos.length === 0) {
-                grid.innerHTML = '<p style="color:#aaa; font-size:13px; text-align:center; grid-column: span 2;">কোনো ভিডিও পাওয়া যায়নি। অ্যাডমিন প্যানেল থেকে ভিডিও আপলোড করুন।</p>';
+                grid.innerHTML = '<p style="color:#aaa; font-size:13px; text-align:center; grid-column: span 2;">কোনো ভিডিও পাওয়া যায়নি। উপরে "⚙️ অ্যাডমিন" বাটন থেকে ভিডিও আপলোড করুন।</p>';
                 return;
             }
 
@@ -208,7 +383,6 @@
             });
         }
 
-        // ভিডিওতে ক্লিক করলে অ্যাড ওপেন হবে এবং ভিডিও চলবে
         function handleVideoClick(videoUrl, adCount, adLink) {
             if (adCount > 0 && adLink) {
                 for (let i = 0; i < adCount; i++) {
