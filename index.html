@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -26,7 +25,7 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             transition: background 0.3s, color 0.3s;
-            padding-bottom: 95px;
+            padding-bottom: 80px;
         }
         header {
             display: flex;
@@ -46,7 +45,7 @@
             gap: 10px;
             align-items: center;
         }
-        button, select {
+        button {
             background: var(--accent-color);
             color: #fff;
             border: none;
@@ -70,36 +69,6 @@
             font-size: 14px;
             box-sizing: border-box;
         }
-        .banner {
-            width: 100%;
-            height: 160px;
-            background: linear-gradient(45deg, #ff416c, #ff4b2b);
-            border-radius: 12px;
-            display: flex;
-            align-items: flex-end;
-            padding: 15px;
-            box-sizing: border-box;
-            font-size: 16px;
-            font-weight: bold;
-            color: #fff;
-            margin-bottom: 15px;
-            cursor: pointer;
-            background-size: cover;
-            background-position: center;
-            position: relative;
-        }
-        .banner::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.3);
-            border-radius: 12px;
-            z-index: 1;
-        }
-        .banner span {
-            position: relative;
-            z-index: 2;
-        }
         .section-title {
             font-size: 16px;
             margin-bottom: 12px;
@@ -116,7 +85,11 @@
             overflow: hidden;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             margin-bottom: 10px;
-            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-3px);
         }
         .card img {
             width: 100%;
@@ -134,45 +107,14 @@
         .card-sub {
             font-size: 11px;
             color: var(--secondary-text);
-            margin-bottom: 8px;
-        }
-        .delete-btn {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: rgba(255, 0, 0, 0.8);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 25px;
-            height: 25px;
-            font-size: 12px;
-            cursor: pointer;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        #timerModal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 3000;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            color: #fff;
-            text-align: center;
-            padding: 20px;
-        }
-
+        /* ভিডিও প্লেয়ার মডাল */
         #videoPlayerModal {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.98);
+            background: rgba(0,0,0,0.95);
             z-index: 4000;
             flex-direction: column;
             justify-content: center;
@@ -187,12 +129,13 @@
             border-radius: 10px;
             overflow: hidden;
             position: relative;
+            aspect-ratio: 16/9;
         }
-        .player-container video {
+        .player-container iframe, .player-container video {
             width: 100%;
-            max-height: 75vh;
+            height: 100%;
+            border: none;
             display: block;
-            background: #000;
         }
         .close-player {
             background: #e91e63;
@@ -206,42 +149,7 @@
             font-size: 14px;
         }
 
-        #adminModal, #uploadPanelModal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-        .admin-box {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 10px;
-            width: 85%;
-            max-width: 350px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        .admin-box input, .admin-box select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            background: #111;
-            border: 1px solid #444;
-            color: #fff;
-            border-radius: 5px;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-        .admin-box label {
-            font-size: 12px;
-            color: #bbb;
-            display: block;
-            margin-bottom: 4px;
-        }
-
+        /* নেভিগেশন বার */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -277,89 +185,29 @@
 <body data-theme="dark">
 
     <header>
-        <div class="logo" id="appTitle">Movie Hub BD</div>
+        <div class="logo">Movie Hub BD</div>
         <div class="header-controls">
-            <select id="langSelect" onchange="changeLanguage()">
-                <option value="bn">বাংলা</option>
-                <option value="en">English</option>
-            </select>
             <button onclick="toggleTheme()">🌓 থিম</button>
-            <button onclick="openAdminLogin()" style="background:#444; font-size:12px; padding:7px 8px;">⚙️</button>
         </div>
     </header>
 
     <div class="container">
+        <!-- সার্চ বক্স -->
         <input type="text" id="searchInput" class="search-box" placeholder="নাটক বা সিনেমা খুঁজুন..." onkeyup="searchMovies()">
-
-        <div class="banner" id="bannerBox" onclick="clickBanner()" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://via.placeholder.com/600x300');">
-            <span id="bannerText">Movie Hub BD - নতুন মুভি ও নাটক দেখুন</span>
-        </div>
 
         <div class="section-title" id="secTitle">জনপ্রিয় সিরিজ ও নাটক</div>
 
+        <!-- ভিডিও গ্রিড লিস্ট -->
         <div class="grid" id="videoGrid"></div>
     </div>
 
-    <!-- ১৫ সেকেন্ড টাইমার -->
-    <div id="timerModal">
-        <h2 style="color: var(--accent-color); margin-bottom: 10px;">বিজ্ঞাপন ও প্রিপারেশন চলছে...</h2>
-        <p style="font-size: 14px; color: #ccc; margin-bottom: 20px;">দয়া করে একটু অপেক্ষা করুন, ভিডিও প্রস্তুত হচ্ছে:</p>
-        <h1 id="countdownNumber" style="font-size: 50px; margin: 0; color: #ffeb3b;">15</h1>
-    </div>
-
-    <!-- ফুলস্ক্রিন ইন-অ্যাপ ভিডিও প্লেয়ার -->
+    <!-- ভিডিও প্লেয়ার পপআপ -->
     <div id="videoPlayerModal">
-        <div class="player-container">
-            <div id="playerWrapper"></div>
-        </div>
+        <div class="player-container" id="playerWrapper"></div>
         <button class="close-player" onclick="closeVideoPlayer()">ভিডিও বন্ধ করুন</button>
     </div>
 
-    <!-- অ্যাডমিন লগইন -->
-    <div id="adminModal">
-        <div class="admin-box">
-            <h3 style="margin-top:0; color:var(--accent-color);">অ্যাডমিন লগইন</h3>
-            <input type="password" id="adminPass" placeholder="পাসওয়ার্ড (1234)">
-            <button onclick="checkAdmin()" style="width:100%; margin-bottom:5px;">লগইন করুন</button>
-            <button onclick="closeAdmin()" style="width:100%; background:#555;">বন্ধ করুন</button>
-        </div>
-    </div>
-
-    <!-- ভিডিও আপলোড ও অ্যাড প্যানেল -->
-    <div id="uploadPanelModal">
-        <div class="admin-box">
-            <h3 style="margin-top:0; color:var(--accent-color);">ভিডিও ও অ্যাড আপলোড প্যানেল</h3>
-
-            <label>ক্যাটাগরি:</label>
-            <select id="newCategory">
-                <option value="drama">সিরিজ ও নাটক</option>
-                <option value="tv">টিভি শো</option>
-            </select>
-
-            <label>নাটক বা মুভির নাম (ক্যাপশন):</label>
-            <input type="text" id="newTitle" placeholder="যেমন: নতুন নাটক পর্ব ১">
-
-            <label>সংক্ষিপ্ত বিবরণ:</label>
-            <input type="text" id="newSub" placeholder="যেমন: ফুল এইচডি ভিডিও">
-
-            <label>থাম্বনেইল ছবি আপলোড করুন:</label>
-            <input type="file" id="newImgFile" accept="image/*" style="background:#222; padding:8px; border-radius:5px; margin-bottom:10px; color:#fff; width:100%; box-sizing:border-box;">
-
-            <label>ভিডিও লিংক (সরাসরি ভিডিওর URL বা ফাইল):</label>
-            <input type="text" id="newVideoUrlInput" placeholder="এখানে ভিডিওর ডাইরেক্ট লিংক দিন (যেমন: .mp4 লিংক)">
-
-            <label>অথবা ফাইল সিলেক্ট করুন:</label>
-            <input type="file" id="newVideoFile" accept="video/*" style="background:#222; padding:8px; border-radius:5px; margin-bottom:10px; color:#fff; width:100%; box-sizing:border-box;">
-
-            <label>বিজ্ঞাপনের লিংক (Ad Link):</label>
-            <input type="text" id="newAdLink" placeholder="বিজ্ঞাপনের লিংক এখানে দিন">
-
-            <button onclick="addNewVideo()" style="width:100%; margin-bottom:5px; background:#4CAF50;">পাবলিশ করুন</button>
-            <button onclick="closeUploadPanel()" style="width:100%; background:#555;">প্যানেল বন্ধ করুন</button>
-        </div>
-    </div>
-
-    <!-- নেভিগেশন বার -->
+    <!-- নিচের নেভিগেশন বার -->
     <div class="bottom-nav">
         <div class="nav-item active" onclick="filterTab('home', this)"><span>🏠</span>হোম</div>
         <div class="nav-item" onclick="filterTab('drama', this)"><span>🎬</span>সিরিজ</div>
@@ -369,51 +217,75 @@
     </div>
 
     <script>
-        let currentBannerLink = 'https://omg10.com/4/11896491';
-
         window.onload = function() {
             loadVideos();
         };
 
-        function clickBanner() {
-            window.open(currentBannerLink, '_blank');
-        }
+        function loadVideos() {
+            let grid = document.getElementById('videoGrid');
+            grid.innerHTML = '';
+            let videos = JSON.parse(localStorage.getItem('movieHubVideos_pro')) || [];
 
-        function startAdTimer(videoUrl, adUrl) {
-            const modal = document.getElementById('timerModal');
-            const countDisplay = document.getElementById('countdownNumber');
-            modal.style.display = 'flex';
-
-            if(adUrl) {
-                window.open(adUrl, '_blank');
+            // যদি কোনো ভিডিও না থাকে তবে স্যাম্পল বা ডেমো দেখাবে
+            if(videos.length === 0) {
+                videos = [{
+                    category: 'drama',
+                    title: 'নমুনা নাটক পর্ব ১',
+                    sub: 'মজার কমেডি নাটক',
+                    imgSrc: 'https://via.placeholder.com/300x150',
+                    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                    adCount: 1,
+                    adLink: 'https://example.com'
+                }];
             }
 
-            let timeLeft = 15;
-            countDisplay.innerText = timeLeft;
+            videos.forEach((vid) => {
+                let newCard = document.createElement('div');
+                newCard.className = 'card';
+                newCard.setAttribute('data-category', vid.category);
+                newCard.setAttribute('data-title', vid.title.toLowerCase());
 
-            let timer = setInterval(function() {
-                timeLeft--;
-                countDisplay.innerText = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    modal.style.display = 'none';
-                    openInAppPlayer(videoUrl);
-                }
-            }, 1000);
+                newCard.innerHTML = `
+                    <div onclick="handleVideoClick('${vid.videoUrl}', ${vid.adCount}, '${vid.adLink}')">
+                        <img src="${vid.imgSrc}" alt="Thumbnail">
+                        <div class="card-body">
+                            <div class="card-title">${vid.title}</div>
+                            <div class="card-sub">${vid.sub}</div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(newCard);
+            });
         }
 
-        function openInAppPlayer(url) {
+        // ভিডিওতে ক্লিক করলে অ্যাড ওপেন হবে এবং ভিডিও চলবে
+        function handleVideoClick(videoUrl, adCount, adLink) {
+            if (adCount > 0 && adLink) {
+                for (let i = 0; i < adCount; i++) {
+                    window.open(adLink, '_blank');
+                }
+            }
+            openVideoPlayer(videoUrl);
+        }
+
+        function openVideoPlayer(url) {
             const playerModal = document.getElementById('videoPlayerModal');
             const wrapper = document.getElementById('playerWrapper');
-
-            // এখানে ডাউনলোড বাটন এবং ফুলস্ক্রিন ফিচার সঠিকভাবে এনাবল করা আছে
-            wrapper.innerHTML = `
-                <video controls autoplay playsinline style="width:100%; max-height:75vh; display:block;">
-                    <source src="${url}" type="video/mp4">
-                    <source src="${url}" type="video/webm">
-                    আপনার ব্রাউজার এই ভিডিও ফরম্যাটটি সরাসরি সাপোর্ট করছে না।
-                </video>
-            `;
+            let embedHtml = '';
+            
+            if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                let videoId = '';
+                if (url.includes('youtu.be/')) {
+                    videoId = url.split('youtu.be/')[1].split('?')[0];
+                } else if (url.includes('watch?v=')) {
+                    videoId = url.split('watch?v=')[1].split('&')[0];
+                }
+                embedHtml = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+            } else {
+                embedHtml = `<video controls autoplay playsinline><source src="${url}" type="video/mp4"></video>`;
+            }
+            
+            wrapper.innerHTML = embedHtml;
             playerModal.style.display = 'flex';
         }
 
@@ -424,135 +296,17 @@
             playerModal.style.display = 'none';
         }
 
-        function openAdminLogin() {
-            document.getElementById('adminModal').style.display = 'flex';
+        function toggleTheme() {
+            const body = document.body;
+            body.setAttribute('data-theme', body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
         }
 
-        function closeAdmin() {
-            document.getElementById('adminModal').style.display = 'none';
-        }
-
-        function checkAdmin() {
-            let pass = document.getElementById('adminPass').value;
-            if(pass === '1234') {
-                closeAdmin();
-                document.getElementById('uploadPanelModal').style.display = 'flex';
-            } else {
-                alert('ভুল পাসওয়ার্ড! (1234 দিন)');
-            }
-        }
-
-        function closeUploadPanel() {
-            document.getElementById('uploadPanelModal').style.display = 'none';
-        }
-
-        function addNewVideo() {
-            let category = document.getElementById('newCategory').value;
-            let title = document.getElementById('newTitle').value;
-            let sub = document.getElementById('newSub').value;
-            let adLink = document.getElementById('newAdLink').value;
-            let videoUrlInput = document.getElementById('newVideoUrlInput').value.trim();
-            let imgFileInput = document.getElementById('newImgFile');
-            let videoFileInput = document.getElementById('newVideoFile');
-
-            if(title && (videoUrlInput || (videoFileInput.files && videoFileInput.files[0]))) {
-                if(videoUrlInput) {
-                    processImageAndSave(category, title, sub, videoUrlInput, adLink, imgFileInput);
-                } else {
-                    let videoFile = videoFileInput.files[0];
-                    let reader = new FileReader();
-                    reader.onload = function(e) {
-                        processImageAndSave(category, title, sub, e.target.result, adLink, imgFileInput);
-                    };
-                    reader.readAsDataURL(videoFile);
-                }
-            } else {
-                alert('দয়া করে নাটকের নাম এবং ভিডিওর লিংক অথবা ফাইল দিন!');
-            }
-        }
-
-        function processImageAndSave(category, title, sub, videoUrl, adLink, imgFileInput) {
-            if (imgFileInput.files && imgFileInput.files[0]) {
-                let imgReader = new FileReader();
-                imgReader.onload = function(imgEvent) {
-                    saveVideoData(category, title, sub, imgEvent.target.result, videoUrl, adLink);
-                }
-                imgReader.readAsDataURL(imgFileInput.files[0]);
-            } else {
-                saveVideoData(category, title, sub, 'https://via.placeholder.com/300x150', videoUrl, adLink);
-            }
-        }
-
-        function saveVideoData(category, title, sub, imgSrc, videoUrl, adLink) {
-            let videos = JSON.parse(localStorage.getItem('movieHubVideos')) || [];
-            let newVid = { category, title, sub, imgSrc, videoUrl, adLink };
-            videos.unshift(newVid);
-            
-            try {
-                localStorage.setItem('movieHubVideos', JSON.stringify(videos));
-                loadVideos();
-                closeUploadPanel();
-                alert('সফলভাবে ভিডিও পাবলিশ করা হয়েছে!');
-
-                document.getElementById('newTitle').value = '';
-                document.getElementById('newSub').value = '';
-                document.getElementById('newAdLink').value = '';
-                document.getElementById('newVideoUrlInput').value = '';
-                document.getElementById('newImgFile').value = '';
-                document.getElementById('newVideoFile').value = '';
-            } catch (e) {
-                alert('স্টোরেজ ফুল হয়ে গেছে! ছোট সাইজের ভিডিও লিংক ব্যবহার করুন।');
-            }
-        }
-
-        function loadVideos() {
-            let grid = document.getElementById('videoGrid');
-            grid.innerHTML = '';
-            let videos = JSON.parse(localStorage.getItem('movieHubVideos')) || [];
-
-            if(videos.length === 0) {
-                videos = [{
-                    category: 'drama',
-                    title: 'নাটক ১',
-                    sub: 'মজার কমেডি নাটক',
-                    imgSrc: 'https://via.placeholder.com/300x150',
-                    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-                    adLink: 'https://wwp.giriuhot.com/redirect-zone/47d42437'
-                }];
-            }
-
-            videos.forEach((vid, index) => {
-                let newCard = document.createElement('div');
-                newCard.className = 'card';
-                newCard.setAttribute('data-category', vid.category);
-                newCard.setAttribute('data-title', vid.title.toLowerCase());
-
-                newCard.innerHTML = `
-                    <button class="delete-btn" onclick="deleteVideo(${index})" title="ডিলিট করুন">X</button>
-                    <img src="${vid.imgSrc}" alt="Thumbnail">
-                    <div class="card-body">
-                        <div class="card-title">${vid.title}</div>
-                        <div class="card-sub">${vid.sub}</div>
-                        <button class="watch-btn" style="display:block; width:100%; padding:8px; background:var(--accent-color); color:white; text-align:center; border-radius:5px; border:none; font-weight:bold; cursor:pointer;" onclick="startAdTimer('${vid.videoUrl}', '${vid.adLink}')">ভিডিও দেখুন</button>
-                    </div>
-                `;
-                grid.appendChild(newCard);
-            });
-
-            if(videos.length > 0) {
-                let bannerBox = document.getElementById('bannerBox');
-                let bannerText = document.getElementById('bannerText');
-                bannerBox.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('${videos[0].imgSrc}')`;
-                bannerText.innerText = videos[0].title + " - এখন অ্যাপে উপলব্ধ!";
-            }
-        }
-
-        function deleteVideo(index) {
-            if(confirm('আপনি কি এই ভিডিওটি ডিলিট করতে চান?')) {
-                let videos = JSON.parse(localStorage.getItem('movieHubVideos')) || [];
-                videos.splice(index, 1);
-                localStorage.setItem('movieHubVideos', JSON.stringify(videos));
-                loadVideos();
+        function searchMovies() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let cards = document.getElementsByClassName('card');
+            for (let i = 0; i < cards.length; i++) {
+                let title = cards[i].getAttribute('data-title').toLowerCase();
+                cards[i].style.display = title.includes(input) ? "" : "none";
             }
         }
 
@@ -580,32 +334,7 @@
             } else if(type === 'favorite') {
                 alert('ফেভারিট লিস্ট খালি!');
             } else if(type === 'profile') {
-                alert('Movie Hub BD | অ্যাডমিন প্যানেল খুলতে উপরে ⚙️ আইকনে চাপুন।');
-            }
-        }
-
-        function toggleTheme() {
-            const body = document.body;
-            body.setAttribute('data-theme', body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-        }
-
-        function changeLanguage() {
-            const lang = document.getElementById('langSelect').value;
-            if(lang === 'en') {
-                document.getElementById('secTitle').innerText = 'Popular Series & Dramas';
-                document.getElementById('searchInput').placeholder = 'Search movies or dramas...';
-            } else {
-                document.getElementById('secTitle').innerText = 'জনপ্রিয় সিরিজ ও নাটক';
-                document.getElementById('searchInput').placeholder = 'নাটক বা সিনেমা খুঁজুন...';
-            }
-        }
-
-        function searchMovies() {
-            let input = document.getElementById('searchInput').value.toLowerCase();
-            let cards = document.getElementsByClassName('card');
-            for (let i = 0; i < cards.length; i++) {
-                let title = cards[i].getAttribute('data-title').toLowerCase();
-                cards[i].style.display = title.includes(input) ? "" : "none";
+                alert('Movie Hub BD প্রফাইল পেজ।');
             }
         }
     </script>
