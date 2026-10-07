@@ -3,23 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movie Hub BD - Website</title>
+    <title>Movie Hub BD</title>
     <style>
         body {
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #121212;
             color: #ffffff;
-            padding: 10px;
+            padding: 15px;
         }
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             background: #1e1e1e;
-            padding: 10px 15px;
+            padding: 12px 15px;
             border-radius: 8px;
             margin-bottom: 15px;
+            font-weight: bold;
+            font-size: 16px;
         }
         .search-box {
             width: 100%;
@@ -54,23 +53,22 @@
 <body>
 
     <div class="header">
-        <span>💡 Movie Hub BD</span>
-        <span style="color: #28a745; font-size: 12px;">• লাইভ</span>
+        🎬 Movie Hub BD
     </div>
 
     <!-- সার্চ বক্স -->
     <input type="text" class="search-box" id="searchInput" placeholder="ভিডিও খুঁজুন..." onkeyup="searchVideos()">
 
-    <h3>জনপ্রিয় ভিডিও তালিকা</h3>
+    <h3 style="font-size: 15px; margin-bottom: 10px;">সকল ভিডিও</h3>
     <div id="videoContainer"></div>
 
     <script>
-        // একই লোকাল স্টোরেজ কি (Key) ব্যবহার করা হয়েছে যাতে অ্যাডমিনের ডাটা এখানে সাথে সাথে পায়
-        const STORAGE_KEY = 'movieHub_exact_sync_data';
+        // একই ডোমেইন বা ফোল্ডারে থাকার কারণে এই কমন চাবি (Key) দিয়ে দুই ফাইল যুক্ত থাকবে
+        const STORAGE_KEY = 'movieHub_secure_sync_key';
 
         window.onload = function() {
             loadWebsiteVideos();
-            // অটো রিফ্রেশ বা সিঙ্ক চেক (যদি একই ব্রাউজারে দুটি ট্যাব খোলা থাকে)
+            // অটো সিঙ্ক যাতে অ্যাডমিন থেকে ভিডিও দিলে এখানে সাথে সাথে চলে আসে
             window.addEventListener('storage', function(e) {
                 if (e.key === STORAGE_KEY) {
                     loadWebsiteVideos();
