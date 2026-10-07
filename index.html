@@ -3,60 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movie Hub BD - Admin & Website</title>
+    <title>Online Video Hub</title>
+    
+    <!-- আপনার Monetag SDK স্ক্রিপ্ট ট্যাগটি এখানে বসাবেন -->
+    <!-- উদাহরণ: <script src="//libtl.com/sdk.js" data-zone="11978077" async></script> -->
+
     <style>
         :root {
-            --bg-color: #0f1015;
-            --text-color: #ffffff;
-            --card-bg: #1a1c23;
-            --accent-color: #e91e63;
-            --secondary-text: #b0b0b0;
-        }
-        [data-theme="light"] {
-            --bg-color: #f4f5f7;
-            --text-color: #111111;
+            --bg-color: #f8f9fa;
+            --text-color: #333333;
             --card-bg: #ffffff;
-            --accent-color: #e91e63;
-            --secondary-text: #666666;
+            --border-color: #dee2e6;
         }
         body {
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
-            transition: background 0.3s, color 0.3s;
-            padding-bottom: 50px;
+            padding-bottom: 40px;
         }
         header {
+            background: #ffffff;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 20px;
-            background: var(--card-bg);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         .logo {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
-            color: var(--accent-color);
-        }
-        .header-controls {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        button, .admin-btn {
-            background: var(--accent-color);
-            color: #fff;
-            border: none;
-            padding: 7px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
+            color: #28a745;
         }
         .container {
             padding: 15px;
@@ -65,19 +43,19 @@
         }
         .search-box {
             width: 100%;
-            padding: 12px;
+            padding: 10px 15px;
             margin-bottom: 15px;
-            border-radius: 8px;
-            border: 1px solid #444;
-            background: var(--card-bg);
-            color: var(--text-color);
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: #fff;
             font-size: 14px;
             box-sizing: border-box;
         }
         .section-title {
-            font-size: 16px;
+            font-size: 15px;
             margin-bottom: 12px;
             font-weight: bold;
+            color: #495057;
         }
         .grid {
             display: grid;
@@ -86,73 +64,37 @@
         }
         .card {
             background: var(--card-bg);
-            border-radius: 10px;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             cursor: pointer;
             transition: transform 0.2s;
         }
         .card:hover {
-            transform: translateY(-3px);
+            transform: translateY(-2px);
         }
         .card img {
             width: 100%;
-            height: 120px;
+            height: 110px;
             object-fit: cover;
         }
         .card-body {
             padding: 10px;
         }
         .card-title {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
-            margin-bottom: 5px;
+            color: #212529;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
-        /* অ্যাডমিন প্যানেল টগল সেকশন */
-        .admin-toggle-box {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .admin-toggle-box input, .admin-toggle-box select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            background: var(--card-bg);
-            border: 1px solid #444;
-            color: var(--text-color);
-            border-radius: 6px;
-            box-sizing: border-box;
-        }
-        .video-list-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px;
-            margin-top: 8px;
-            border-radius: 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 13px;
-        }
-        .delete-btn {
-            background: #ff3366;
-            padding: 4px 8px;
-            font-size: 11px;
-        }
-
-        /* ভিডিও প্লেয়ার মডাল */
         #videoPlayerModal {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95);
+            background: rgba(0,0,0,0.9);
             z-index: 4000;
             flex-direction: column;
             justify-content: center;
@@ -164,9 +106,8 @@
             width: 100%;
             max-width: 700px;
             background: #000;
-            border-radius: 10px;
+            border-radius: 8px;
             overflow: hidden;
-            position: relative;
             aspect-ratio: 16/9;
         }
         .player-container iframe, .player-container video {
@@ -176,11 +117,11 @@
             display: block;
         }
         .close-player {
-            background: #e91e63;
+            background: #dc3545;
             color: #fff;
             border: none;
-            padding: 10px 25px;
-            border-radius: 5px;
+            padding: 8px 20px;
+            border-radius: 4px;
             font-weight: bold;
             cursor: pointer;
             margin-top: 15px;
@@ -188,69 +129,25 @@
         }
     </style>
 </head>
-<body data-theme="dark">
+<body>
 
     <header>
-        <div class="logo">Movie Hub BD</div>
-        <div class="header-controls">
-            <button onclick="toggleAdminPanel()">⚙️ অ্যাডমিন</button>
-            <button onclick="toggleTheme()">🌓 থিম</button>
-        </div>
+        <div class="logo">💡 Online Video Hub</div>
+        <div style="font-size: 12px; color: #28a745; font-weight: bold;">● লাইভ</div>
     </header>
 
     <div class="container">
-        <!-- অ্যাডমিন প্যানেল (লগইন ও আপলোড) -->
-        <div id="adminPanelContainer" class="admin-toggle-box" style="display:none;">
-            <div id="loginBox">
-                <h3 style="margin-top:0; color:#e91e63;">🔐 অ্যাডমিন লগইন</h3>
-                <input type="password" id="adminPass" placeholder="পাসওয়ার্ড দিন (1234)">
-                <button onclick="checkLogin()">প্রবেশ করুন</button>
-            </div>
+        <input type="text" id="searchInput" class="search-box" placeholder="ভিডিও খুঁজুন..." onkeyup="searchVideos()">
 
-            <div id="uploadBox" style="display:none;">
-                <h3 style="margin-top:0; color:#e91e63;">⚡ ভিডিও আপলোড প্যানেল</h3>
-                
-                <label style="font-size:12px; font-weight:bold;">নাটক বা মুভির নাম:</label>
-                <input type="text" id="newTitle" placeholder="যেমন: নতুন নাটক পর্ব ১">
+        <div class="section-title">জনপ্রিয় ভিডিও তালিকা</div>
 
-                <label style="font-size:12px; font-weight:bold;">থাম্বনেইল ছবি আপলোড:</label>
-                <input type="file" id="newImgFile" accept="image/*">
-
-                <label style="font-size:12px; font-weight:bold;">ইউটিউব বা ভিডিও লিংক:</label>
-                <input type="text" id="newVideoUrl" placeholder="এখানে ভিডিওর লিংক দিন">
-
-                <label style="font-size:12px; font-weight:bold;">অ্যাড সংখ্যা:</label>
-                <select id="newAdCount">
-                    <option value="0">কোনো অ্যাড নেই (0)</option>
-                    <option value="1">১টি অ্যাড</option>
-                    <option value="2">২টি অ্যাড</option>
-                    <option value="3">৩টি অ্যাড</option>
-                </select>
-
-                <label style="font-size:12px; font-weight:bold;">বিজ্ঞাপনের লিংক (Ad Link):</label>
-                <input type="text" id="newAdLink" placeholder="অ্যাড লিংক এখানে দিন">
-
-                <button onclick="addNewVideo()" style="background: #28a745; width:100%; margin-bottom:10px;">সফলভাবে পাবলিশ করুন</button>
-                <button onclick="logoutAdmin()" style="background: #444; width:100%;">লগআউট</button>
-
-                <h4 style="margin:15px 0 5px 0; font-size:14px;">আপলোড করা ভিডিও তালিকা:</h4>
-                <div id="adminVideoList"></div>
-            </div>
-        </div>
-
-        <!-- সার্চ বক্স -->
-        <input type="text" id="searchInput" class="search-box" placeholder="নাটক বা সিনেমা খুঁজুন..." onkeyup="searchMovies()">
-
-        <div class="section-title">সকল ভিডিও তালিকা</div>
-
-        <!-- ভিডিও গ্রিড লিস্ট -->
         <div class="grid" id="videoGrid"></div>
     </div>
 
-    <!-- ভিডিও প্লেয়ার পপআপ -->
+    <!-- ভিডিও প্লেয়ার মোডাল -->
     <div id="videoPlayerModal">
         <div class="player-container" id="playerWrapper"></div>
-        <button class="close-player" onclick="closeVideoPlayer()">ভিডিও বন্ধ করুন</button>
+        <button class="close-player" onclick="closeVideoPlayer()">বন্ধ করুন</button>
     </div>
 
     <script>
@@ -258,111 +155,13 @@
             loadVideos();
         };
 
-        function toggleAdminPanel() {
-            let panel = document.getElementById('adminPanelContainer');
-            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-        }
-
-        function checkLogin() {
-            let pass = document.getElementById('adminPass').value;
-            if(pass === '1234') {
-                document.getElementById('loginBox').style.display = 'none';
-                document.getElementById('uploadBox').style.display = 'block';
-                loadAdminVideos();
-            } else {
-                alert('ভুল পাসওয়ার্ড! (সঠিক পাসওয়ার্ড: 1234)');
-            }
-        }
-
-        function logoutAdmin() {
-            document.getElementById('uploadBox').style.display = 'none';
-            document.getElementById('loginBox').style.display = 'block';
-            document.getElementById('adminPass').value = '';
-        }
-
-        function addNewVideo() {
-            let title = document.getElementById('newTitle').value.trim();
-            let videoUrl = document.getElementById('newVideoUrl').value.trim();
-            let adCount = parseInt(document.getElementById('newAdCount').value) || 0;
-            let adLink = document.getElementById('newAdLink').value.trim();
-            let imgFileInput = document.getElementById('newImgFile');
-
-            if(!title || !videoUrl) {
-                alert('দয়া করে নাটকের নাম এবং ভিডিওর লিংক দিন!');
-                return;
-            }
-
-            if (imgFileInput.files && imgFileInput.files[0]) {
-                let reader = new FileReader();
-                reader.onload = function(e) {
-                    saveVideoData(title, e.target.result, videoUrl, adCount, adLink);
-                };
-                reader.readAsDataURL(imgFileInput.files[0]);
-            } else {
-                saveVideoData(title, 'https://via.placeholder.com/300x150', videoUrl, adCount, adLink);
-            }
-        }
-
-        function saveVideoData(title, imgSrc, videoUrl, adCount, adLink) {
-            let videos = JSON.parse(localStorage.getItem('movieHubVideos_pro')) || [];
-            let newVid = { title, imgSrc, videoUrl, adCount, adLink };
-            videos.unshift(newVid);
-
-            try {
-                localStorage.setItem('movieHubVideos_pro', JSON.stringify(videos));
-                alert('ভিডিও সফলভাবে পাবলিশ করা হয়েছে!');
-
-                document.getElementById('newTitle').value = '';
-                document.getElementById('newImgFile').value = '';
-                document.getElementById('newVideoUrl').value = '';
-                document.getElementById('newAdLink').value = '';
-                document.getElementById('newAdCount').value = '0';
-
-                loadAdminVideos();
-                loadVideos(); // সাথে সাথে ওয়েবসাইটে আপডেট দেখাবে
-            } catch (e) {
-                alert('স্টোরেজ ফুল হয়ে গেছে বা ছবি অনেক বড়!');
-            }
-        }
-
-        function loadAdminVideos() {
-            let listDiv = document.getElementById('adminVideoList');
-            listDiv.innerHTML = '';
-            let videos = JSON.parse(localStorage.getItem('movieHubVideos_pro')) || [];
-
-            if(videos.length === 0) {
-                listDiv.innerHTML = '<p style="color:#aaa; font-size:12px;">কোনো ভিডিও নেই।</p>';
-                return;
-            }
-
-            videos.forEach((vid, index) => {
-                let item = document.createElement('div');
-                item.className = 'video-list-item';
-                item.innerHTML = `
-                    <span><b>${vid.title}</b></span>
-                    <button class="delete-btn" onclick="deleteVideo(${index})">ডিলিট</button>
-                `;
-                listDiv.appendChild(item);
-            });
-        }
-
-        function deleteVideo(index) {
-            if(confirm('আপনি কি এই ভিডিওটি ডিলিট করতে চান?')) {
-                let videos = JSON.parse(localStorage.getItem('movieHubVideos_pro')) || [];
-                videos.splice(index, 1);
-                localStorage.setItem('movieHubVideos_pro', JSON.stringify(videos));
-                loadAdminVideos();
-                loadVideos();
-            }
-        }
-
         function loadVideos() {
             let grid = document.getElementById('videoGrid');
             grid.innerHTML = '';
-            let videos = JSON.parse(localStorage.getItem('movieHubVideos_pro')) || [];
+            let videos = JSON.parse(localStorage.getItem('safeMovieHub_data')) || [];
 
             if(videos.length === 0) {
-                grid.innerHTML = '<p style="color:#aaa; font-size:13px; text-align:center; grid-column: span 2;">কোনো ভিডিও পাওয়া যায়নি। উপরে "⚙️ অ্যাডমিন" বাটন থেকে ভিডিও আপলোড করুন।</p>';
+                grid.innerHTML = '<p style="color:#6c757d; font-size:13px; text-align:center; grid-column: span 2;">বর্তমানে কোনো ভিডিও নেই।</p>';
                 return;
             }
 
@@ -372,7 +171,7 @@
                 newCard.setAttribute('data-title', vid.title.toLowerCase());
 
                 newCard.innerHTML = `
-                    <div onclick="handleVideoClick('${vid.videoUrl}', ${vid.adCount}, '${vid.adLink}')">
+                    <div onclick="handleVideoClick('${vid.videoUrl}')">
                         <img src="${vid.imgSrc}" alt="Thumbnail">
                         <div class="card-body">
                             <div class="card-title">${vid.title}</div>
@@ -383,13 +182,17 @@
             });
         }
 
-        function handleVideoClick(videoUrl, adCount, adLink) {
-            if (adCount > 0 && adLink) {
-                for (let i = 0; i < adCount; i++) {
-                    window.open(adLink, '_blank');
-                }
+        // Monetag Rewarded Ad ইন্টিগ্রেশন
+        function handleVideoClick(videoUrl) {
+            if (typeof show_11978077 === 'function') {
+                show_11978077().then(() => {
+                    openVideoPlayer(videoUrl);
+                }).catch((e) => {
+                    openVideoPlayer(videoUrl);
+                });
+            } else {
+                openVideoPlayer(videoUrl);
             }
-            openVideoPlayer(videoUrl);
         }
 
         function openVideoPlayer(url) {
@@ -420,12 +223,7 @@
             playerModal.style.display = 'none';
         }
 
-        function toggleTheme() {
-            const body = document.body;
-            body.setAttribute('data-theme', body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-        }
-
-        function searchMovies() {
+        function searchVideos() {
             let input = document.getElementById('searchInput').value.toLowerCase();
             let cards = document.getElementsByClassName('card');
             for (let i = 0; i < cards.length; i++) {
